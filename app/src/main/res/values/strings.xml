@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Link Up</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="connect_with_friends_discover_new_communities_and_share_your_life_with_others">Connect with friends, discover new communities, and share your life with others.</string>
+    <string name="link_up">Link Up</string>
+    <string name="welcome_to">Welcome to</string>
+    <string name="_91">+91</string>
+    <string name="phone_number">Phone number</string>
+    <string name="login">Login</string>
+    <string name="an_authentication_code_has_been_sent_to">An Authentication code has been sent to</string>
+    <string name="code_sent">Code Sent.</string>
+    <string name="_91_1234567890">+91 1234567890</string>
+    <string name="verify">Verify</string>
+    <string name="resend_otp">Resend OTP</string>
+</resources>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/themeColor"
+    tools:context=".authentication.SignInOtpFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/signInOTPFragmentToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/back_arrow"
+        app:title="OTP Verification"
+        app:titleTextColor="@color/white" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signInOTPFragmentToolbar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/an_authentication_code_has_been_sent_to"
+            android:textColor="@color/white50"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/signInOTPFragmentPhoneNoTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="3dp"
+            android:text="@string/_91_1234567890"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <EditText
+            android:id="@+id/signInOTPNumber1"
+            android:layout_width="45dp"
+            android:layout_height="55dp"
+            android:background="@drawable/button_shape_design"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white50"
+            android:textSize="45sp"
+            tools:ignore="Autofill,LabelFor" />
+
+        <EditText
+            android:id="@+id/signInOTPNumber2"
+            android:layout_width="45dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/button_shape_design"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white50"
+            android:textSize="45sp"
+            tools:ignore="Autofill,LabelFor" />
+
+        <EditText
+            android:id="@+id/signInOTPNumber3"
+            android:layout_width="45dp"
+            android:layout_height="55dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/button_shape_design"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white50"
+            android:textSize="45sp"
+            tools:ignore="Autofill,LabelFor" />
+
+        <EditText
+            android:id="@+id/signInOTPNumber4"
+            android:layout_width="45dp"
+            android:layout_height="55dp"
+            android:background="@drawable/button_shape_design"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white50"
+            android:textSize="45sp"
+            tools:ignore="Autofill,LabelFor" />
+
+        <EditText
+            android:id="@+id/signInOTPNumber5"
+            android:layout_width="45dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/button_shape_design"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white50"
+            android:textSize="45sp"
+            tools:ignore="Autofill,LabelFor" />
+
+        <EditText
+            android:id="@+id/signInOTPNumber6"
+            android:layout_width="45dp"
+            android:layout_height="55dp"
+            android:background="@drawable/button_shape_design"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white50"
+            android:textSize="45sp"
+            tools:ignore="Autofill,LabelFor" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/signInOTPFragmentVerifyButton"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/button_shape_design"
+        android:text="@string/verify"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/signInOTPFragmentPB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/signInOTPFragmentVerifyButton"
+        app:layout_constraintEnd_toEndOf="@+id/signInOTPFragmentVerifyButton"
+        app:layout_constraintStart_toStartOf="@+id/signInOTPFragmentVerifyButton"
+        app:layout_constraintTop_toTopOf="@+id/signInOTPFragmentVerifyButton" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/signInOTPFragmentVerifyButton">
+
+        <TextView
+            android:id="@+id/resendOTPTV"
+            android:layout_width="110dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:text="@string/resend_otp"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

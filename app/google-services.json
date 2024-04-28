@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "972593551704",
+    "project_id": "link-up-pro-kotlin-app",
+    "storage_bucket": "link-up-pro-kotlin-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972593551704:android:43ce3028c5da194b8fad2d",
+        "android_client_info": {
+          "package_name": "com.example.linkup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhiKlmkio7YMSbLqxPWK1fDdSVTThiea0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

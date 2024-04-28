@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/themeColor"
+    tools:context=".authentication.SignInFragment">
+
+    <ImageView
+        android:id="@+id/appLogoIV"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="50dp"
+        android:padding="2dp"
+        android:src="@drawable/app_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/welcomeTV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/welcome_to"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appLogoIV" />
+
+    <TextView
+        android:id="@+id/welcomeTV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/link_up"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcomeTV1" />
+
+    <TextView
+        android:id="@+id/welcomeMessageTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:justificationMode="inter_word"
+        android:maxWidth="300dp"
+        android:text="@string/connect_with_friends_discover_new_communities_and_share_your_life_with_others"
+        android:textColor="@color/white50"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcomeTV2"
+        tools:ignore="UnusedAttribute" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcomeMessageTV">
+
+        <com.hbb20.CountryCodePicker
+            android:id="@+id/signInFragmentCCP"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="bottom"
+            app:ccpDialog_keyboardAutoPopup="false"
+            app:ccp_autoDetectCountry="true"
+            app:ccp_contentColor="@color/white"
+            app:ccp_showFlag="false"
+            app:ccp_showNameCode="false"
+            app:ccp_textSize="20sp" />
+
+        <EditText
+            android:id="@+id/signInFragmentPhoneNoET"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:hint="@string/phone_number"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="15"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white50"
+            android:textSize="22sp"
+            tools:ignore="LabelFor,TextFields" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/signInFragmentLoginButton"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/button_shape_design"
+        android:text="@string/login"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <ProgressBar
+        android:id="@+id/signInFragmentPB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/signInFragmentLoginButton"
+        app:layout_constraintEnd_toEndOf="@+id/signInFragmentLoginButton"
+        app:layout_constraintStart_toStartOf="@+id/signInFragmentLoginButton"
+        app:layout_constraintTop_toTopOf="@+id/signInFragmentLoginButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

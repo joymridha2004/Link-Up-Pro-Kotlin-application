@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.linkup.authentication.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.example.linkup.authentication.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signInFragment_to_signInOtpFragment"
+            app:destination="@id/signInOtpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signInOtpFragment"
+        android:name="com.example.linkup.authentication.SignInOtpFragment"
+        android:label="fragment_sign_in_otp"
+        tools:layout="@layout/fragment_sign_in_otp" >
+        <action
+            android:id="@+id/action_signInOtpFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+        <argument
+            android:name="OTP"
+            app:argType="string" />
+        <argument
+            android:name="resendToken"
+            app:argType="com.google.firebase.auth.PhoneAuthProvider$ForceResendingToken" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.linkup.authentication.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+</navigation>
