@@ -48,100 +48,36 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        android:background="@drawable/otp_image"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+
+    <EditText
+        android:id="@+id/signInOTPFragmentOtpET"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
-        <EditText
-            android:id="@+id/signInOTPNumber1"
-            android:layout_width="45dp"
-            android:layout_height="55dp"
-            android:background="@drawable/button_shape_design"
-            android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white50"
-            android:textSize="45sp"
-            tools:ignore="Autofill,LabelFor" />
-
-        <EditText
-            android:id="@+id/signInOTPNumber2"
-            android:layout_width="45dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/button_shape_design"
-            android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white50"
-            android:textSize="45sp"
-            tools:ignore="Autofill,LabelFor" />
-
-        <EditText
-            android:id="@+id/signInOTPNumber3"
-            android:layout_width="45dp"
-            android:layout_height="55dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/button_shape_design"
-            android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white50"
-            android:textSize="45sp"
-            tools:ignore="Autofill,LabelFor" />
-
-        <EditText
-            android:id="@+id/signInOTPNumber4"
-            android:layout_width="45dp"
-            android:layout_height="55dp"
-            android:background="@drawable/button_shape_design"
-            android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white50"
-            android:textSize="45sp"
-            tools:ignore="Autofill,LabelFor" />
-
-        <EditText
-            android:id="@+id/signInOTPNumber5"
-            android:layout_width="45dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/button_shape_design"
-            android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white50"
-            android:textSize="45sp"
-            tools:ignore="Autofill,LabelFor" />
-
-        <EditText
-            android:id="@+id/signInOTPNumber6"
-            android:layout_width="45dp"
-            android:layout_height="55dp"
-            android:background="@drawable/button_shape_design"
-            android:gravity="center"
-            android:inputType="number"
-            android:maxLength="1"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white50"
-            android:textSize="45sp"
-            tools:ignore="Autofill,LabelFor" />
-
-    </LinearLayout>
+        android:background="@drawable/button_shape_design"
+        android:gravity="center"
+        android:hint="Enter your OTP!"
+        android:inputType="number"
+        android:maxLength="6"
+        android:paddingStart="12dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="6dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white50"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/signInOTPFragmentVerifyButton"
@@ -178,7 +114,7 @@
 
         <TextView
             android:id="@+id/resendOTPTV"
-            android:layout_width="110dp"
+            android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:gravity="center"
             android:text="@string/resend_otp"

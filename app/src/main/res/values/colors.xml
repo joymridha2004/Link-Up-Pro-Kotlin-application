@@ -5,4 +5,5 @@
     <color name="themeColor">#1A2A3A</color>
     <color name="white50">#80FFFFFF</color>
     <color name="white20">#33FFFFFF</color>
+    <color name="red">#FF0000</color>
 </resources>

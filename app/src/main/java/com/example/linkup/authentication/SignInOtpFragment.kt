@@ -1,12 +1,12 @@
 package com.example.linkup.authentication
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Vibrator
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.linkup.R
@@ -29,13 +28,16 @@ import java.util.concurrent.TimeUnit
 
 class SignInOtpFragment : Fragment() {
     private lateinit var binding: FragmentSignInOtpBinding
+
     private val args: SignInOtpFragmentArgs by navArgs()
     private lateinit var vibrator: Vibrator
     private lateinit var mAuth: FirebaseAuth
     private lateinit var fStore: FirebaseFirestore
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
     private var verificationInProgress = false
-
+    private var userUid: String? = null
+    private var email: String? = null
+    private var twoStepVerification: Boolean? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,24 +50,14 @@ class SignInOtpFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
 
-        addTextChangeListener()
-
         binding.signInOTPFragmentVerifyButton.setOnClickListener {
             vibrator.vibrate(100)
-            val typeOTP = binding.run {
-                signInOTPNumber1.text.toString() +
-                        signInOTPNumber2.text.toString() +
-                        signInOTPNumber3.text.toString() +
-                        signInOTPNumber4.text.toString() +
-                        signInOTPNumber5.text.toString() +
-                        signInOTPNumber6.text.toString()
-            }
-
+            val typeOTP = binding.signInOTPFragmentOtpET.text
             if (!verificationInProgress) {
                 if (typeOTP.length == 6) {
                     binding.signInOTPFragmentPB.visibility = View.VISIBLE
                     binding.signInOTPFragmentVerifyButton.visibility = View.INVISIBLE
-                    val credential = PhoneAuthProvider.getCredential(args.otp, typeOTP)
+                    val credential = PhoneAuthProvider.getCredential(args.otp, typeOTP.toString())
                     signInWithPhoneAuthCredential(credential)
                 } else {
                     showToast("Please enter a 6-digit OTP.")
@@ -107,47 +99,12 @@ class SignInOtpFragment : Fragment() {
             if (task.isSuccessful) {
                 binding.signInOTPFragmentPB.visibility = View.INVISIBLE
                 binding.signInOTPFragmentVerifyButton.visibility = View.VISIBLE
-                findNavController().navigate(R.id.action_signInOtpFragment_to_homeFragment)
+                findNextActivity()
             } else {
                 binding.signInOTPFragmentPB.visibility = View.INVISIBLE
                 binding.signInOTPFragmentVerifyButton.visibility = View.VISIBLE
                 showToast("Sign in failed: ${task.exception?.message}")
             }
-        }
-    }
-
-    private fun addTextChangeListener() {
-        val editTextList = listOf(
-            binding.signInOTPNumber1,
-            binding.signInOTPNumber2,
-            binding.signInOTPNumber3,
-            binding.signInOTPNumber4,
-            binding.signInOTPNumber5,
-            binding.signInOTPNumber6
-        )
-
-        editTextList.forEachIndexed { index, editText ->
-            editText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-                override fun afterTextChanged(s: Editable?) {
-                    val text = s.toString()
-
-                    if (text.length == 1 && index < editTextList.lastIndex) {
-                        editTextList[index + 1].requestFocus()
-                    } else if (text.isEmpty() && index > 0) {
-                        editTextList[index - 1].requestFocus()
-                    }
-                }
-            })
         }
     }
 
@@ -175,18 +132,69 @@ class SignInOtpFragment : Fragment() {
         }
     }
 
-    private fun resendOTPTvVisibility() {
-        binding.signInOTPNumber1.setText("")
-        binding.signInOTPNumber2.setText("")
-        binding.signInOTPNumber3.setText("")
-        binding.signInOTPNumber4.setText("")
-        binding.signInOTPNumber5.setText("")
-        binding.signInOTPNumber6.setText("")
-        binding.resendOTPTV.visibility = View.INVISIBLE
-        binding.resendOTPTV.isEnabled = false
+    private fun findNextActivity() {
+        // Fetch userUid from Current user details
+        userUid = mAuth.currentUser?.uid
+        if (userUid != null) {
+            val documentReference = fStore.collection("usersDetails").document(userUid!!)
+            documentReference.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val document = task.result
+                    if (document != null && document.exists()) {
+                        twoStepVerification = document.getBoolean("twoStepVerification")
+                        email = document.getString("userEmailId")
+                        if (twoStepVerification!!) {
+                            // User data exists, proceed to twoStepVerification activity
+                            binding.signInOTPFragmentPB.visibility = View.INVISIBLE
+                            binding.signInOTPFragmentVerifyButton.visibility = View.VISIBLE
+                            sendToTwoStepVerification()
+                            return@addOnCompleteListener
+                        }
+                        // User data exists, proceed to main activity
+                        binding.signInOTPFragmentPB.visibility = View.INVISIBLE
+                        binding.signInOTPFragmentVerifyButton.visibility = View.VISIBLE
+                        showToast("Authentication successful")
+                        sendToHome()
+                    } else {
+                        // User data doesn't exist, proceed to sign-up activity
+                        sendToSignUp()
+                        return@addOnCompleteListener
+                    }
+                } else {
+                    showToast("Error fetching user data")
+                    Log.d("TAG", "Task is unsuccessful: ${task.exception.toString()}")
+                }
+            }
+        } else {
+            showToast("Internal error!")
+            Log.d("TAG", "UserUid is null")
+        }
+    }
 
+    private fun sendToSignUp() {
+        val direction =
+            SignInOtpFragmentDirections.actionSignInOtpFragmentToSignUpFragment(args.phoneNumber)
+        findNavController().navigate(direction)
+    }
+
+    private fun sendToHome() {
+        findNavController().navigate(R.id.action_signInOtpFragment_to_homeFragment)
+    }
+
+    private fun sendToTwoStepVerification() {
+        showToast("Go to two step verification Fragment")
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private fun resendOTPTvVisibility() {
+        binding.resendOTPTV.isEnabled = false
+        binding.resendOTPTV.setTextColor(Color.RED)
+        binding.resendOTPTV.setText("Waiting for 1 minute")
+        binding.resendOTPTV.isEnabled = false
         Handler(Looper.myLooper()!!).postDelayed({
-            binding.resendOTPTV.visibility = View.VISIBLE
+            binding.resendOTPTV.setTextColor(Color.WHITE)
+            binding.resendOTPTV.isEnabled = true
+            binding.resendOTPTV.setText(R.string.resend_otp)
             binding.resendOTPTV.isEnabled = true
         }, 60000)
     }

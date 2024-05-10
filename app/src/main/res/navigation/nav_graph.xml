@@ -9,7 +9,7 @@
         android:id="@+id/splashFragment"
         android:name="com.example.linkup.authentication.SplashFragment"
         android:label="fragment_splash"
-        tools:layout="@layout/fragment_splash" >
+        tools:layout="@layout/fragment_splash">
         <action
             android:id="@+id/action_splashFragment_to_signInFragment"
             app:destination="@id/signInFragment"
@@ -20,7 +20,7 @@
         android:id="@+id/signInFragment"
         android:name="com.example.linkup.authentication.SignInFragment"
         android:label="fragment_sign_in"
-        tools:layout="@layout/fragment_sign_in" >
+        tools:layout="@layout/fragment_sign_in">
         <action
             android:id="@+id/action_signInFragment_to_signInOtpFragment"
             app:destination="@id/signInOtpFragment" />
@@ -29,7 +29,7 @@
         android:id="@+id/signInOtpFragment"
         android:name="com.example.linkup.authentication.SignInOtpFragment"
         android:label="fragment_sign_in_otp"
-        tools:layout="@layout/fragment_sign_in_otp" >
+        tools:layout="@layout/fragment_sign_in_otp">
         <action
             android:id="@+id/action_signInOtpFragment_to_homeFragment"
             app:destination="@id/homeFragment"
@@ -44,10 +44,24 @@
         <argument
             android:name="resendToken"
             app:argType="com.google.firebase.auth.PhoneAuthProvider$ForceResendingToken" />
+        <action
+            android:id="@+id/action_signInOtpFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.linkup.authentication.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.linkup.authentication.SignUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" >
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+    </fragment>
 </navigation>
