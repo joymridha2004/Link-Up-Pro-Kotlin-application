@@ -7,27 +7,17 @@
     android:background="@color/themeColor"
     tools:context=".authentication.SignUpFragment">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/signUpFragmentToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/back_arrow"
-        app:title="Create an account"
-        app:titleTextColor="@color/white" />
-
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:layout_marginTop="70dp"
+        android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="330dp"
+        android:visibility="visible"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUpFragmentToolbar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/nameTV"
@@ -108,24 +98,8 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/verifyTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:justificationMode="inter_word"
-        android:maxWidth="300dp"
-        android:text="@string/to_ensure_customer_security_please_verify_your_email_to_create_your_account"
-        android:textColor="@color/white50"
-        android:textSize="16sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/signUpFragmentNextButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/signUpFragmentNextButton"
+        android:id="@+id/signUpFragmentNextBT"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
@@ -135,26 +109,27 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout3"
-        app:layout_constraintStart_toStartOf="@+id/linearLayout3" />
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout2" />
 
     <ProgressBar
-        android:id="@+id/signUpActivityProgressBar"
+        android:id="@+id/signUpActivityPB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/signUpFragmentNextButton"
-        app:layout_constraintEnd_toEndOf="@+id/signUpFragmentNextButton"
-        app:layout_constraintStart_toStartOf="@+id/signUpFragmentNextButton"
-        app:layout_constraintTop_toTopOf="@+id/signUpFragmentNextButton" />
+        app:layout_constraintBottom_toBottomOf="@+id/signUpFragmentNextBT"
+        app:layout_constraintEnd_toEndOf="@+id/signUpFragmentNextBT"
+        app:layout_constraintStart_toStartOf="@+id/signUpFragmentNextBT"
+        app:layout_constraintTop_toTopOf="@+id/signUpFragmentNextBT" />
 
     <LinearLayout
-        android:id="@+id/linearLayout3"
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
         android:orientation="horizontal"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">

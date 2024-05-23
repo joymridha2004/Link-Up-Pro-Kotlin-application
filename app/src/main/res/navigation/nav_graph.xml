@@ -49,12 +49,22 @@
             app:destination="@id/signUpFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_signInOtpFragment_to_stepTwoVerificationFragment"
+            app:destination="@id/stepTwoVerificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.linkup.authentication.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <argument
+            android:name="PhoneNumber"
+            app:argType="string" />
+        <argument
+            android:name="userUid"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.linkup.authentication.SignUpFragment"
@@ -63,5 +73,110 @@
         <argument
             android:name="phoneNumber"
             app:argType="string" />
+        <action
+            android:id="@+id/action_signUpFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+        <argument
+            android:name="userUid"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_signUpFragment_to_signUpOtpFragment"
+            app:destination="@id/signUpOtpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/stepTwoVerificationFragment"
+        android:name="com.example.linkup.authentication.StepTwoVerificationFragment"
+        android:label="fragment_step_two_verification"
+        tools:layout="@layout/fragment_step_two_verification" >
+        <action
+            android:id="@+id/action_stepTwoVerificationFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_stepTwoVerificationFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+        <argument
+            android:name="userUid"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_stepTwoVerificationFragment_to_forgetPasswordOtpFragment"
+            app:destination="@id/forgetPasswordOtpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpOtpFragment"
+        android:name="com.example.linkup.authentication.SignUpOtpFragment"
+        android:label="fragment_sign_up_otp"
+        tools:layout="@layout/fragment_sign_up_otp" >
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+        <argument
+            android:name="name"
+            app:argType="string" />
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <argument
+            android:name="dob"
+            app:argType="string" />
+        <argument
+            android:name="userUid"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_signUpOtpFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <argument
+            android:name="verificationCode"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_signUpOtpFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/forgetPasswordOtpFragment"
+        android:name="com.example.linkup.authentication.ForgetPasswordOtpFragment"
+        android:label="fragment_forget_password_otp"
+        tools:layout="@layout/fragment_forget_password_otp" >
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <argument
+            android:name="name"
+            app:argType="string" />
+        <argument
+            android:name="userUid"
+            app:argType="string" />
+        <argument
+            android:name="verificationCode"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_forgetPasswordOtpFragment_to_forgetPasswordFragment"
+            app:destination="@id/forgetPasswordFragment" />
+        <action
+            android:id="@+id/action_forgetPasswordOtpFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/forgetPasswordFragment"
+        android:name="com.example.linkup.authentication.ForgetPasswordFragment"
+        android:label="fragment_forget_password"
+        tools:layout="@layout/fragment_forget_password" >
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+        <argument
+            android:name="userUid"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_forgetPasswordFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_forgetPasswordFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
 </navigation>

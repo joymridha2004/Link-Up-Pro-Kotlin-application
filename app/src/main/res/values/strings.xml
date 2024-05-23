@@ -27,4 +27,8 @@
     <string name="to_ensure_customer_security_please_verify_your_email_to_create_your_account">To ensure user security, please verify your email to create your account.</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="sign_in">Sign In</string>
+    <string name="forget_password">Forget password</string>
+    <string name="enter_password">Enter password</string>
+    <string name="step_2_verification_message">You have enabled Two-Step Verification, so your account is protected with an additional password.</string>
+    <string name="enter_new_password">Enter new password</string>
 </resources>

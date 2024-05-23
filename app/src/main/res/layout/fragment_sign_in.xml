@@ -99,7 +99,7 @@
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/signInFragmentLoginButton"
+        android:id="@+id/signInFragmentLoginBT"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
@@ -118,9 +118,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/signInFragmentLoginButton"
-        app:layout_constraintEnd_toEndOf="@+id/signInFragmentLoginButton"
-        app:layout_constraintStart_toStartOf="@+id/signInFragmentLoginButton"
-        app:layout_constraintTop_toTopOf="@+id/signInFragmentLoginButton" />
+        app:layout_constraintBottom_toBottomOf="@+id/signInFragmentLoginBT"
+        app:layout_constraintEnd_toEndOf="@+id/signInFragmentLoginBT"
+        app:layout_constraintStart_toStartOf="@+id/signInFragmentLoginBT"
+        app:layout_constraintTop_toTopOf="@+id/signInFragmentLoginBT" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

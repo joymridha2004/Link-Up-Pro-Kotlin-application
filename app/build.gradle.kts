@@ -35,8 +35,12 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures{
-        viewBinding= true
+    buildFeatures {
+        viewBinding = true
+    }
+    packagingOptions{
+        exclude("META-INF/NOTICE.md")
+        exclude("META/INF/LICENSE.md")
     }
 }
 
@@ -57,10 +61,13 @@ dependencies {
     // Navigation component
     val nav_version = "2.7.7"
 
-    implementation ("androidx.navigation:navigation-fragment-ktx:$nav_version")
-    implementation ("androidx.navigation:navigation-ui-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
     // Country Code Picker
     implementation("com.hbb20:ccp:2.7.3")
+
+    implementation("com.sun.mail:android-mail:1.6.5")
+    implementation("com.sun.mail:android-activation:1.6.5")
 
 }

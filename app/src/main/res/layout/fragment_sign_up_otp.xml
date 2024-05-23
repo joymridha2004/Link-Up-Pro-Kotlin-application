@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/themeColor"
-    tools:context=".authentication.SignInOtpFragment">
+    tools:context=".authentication.SignUpOtpFragment">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -25,12 +25,12 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/signInOTPFragmentPhoneNoTV"
+            android:id="@+id/signUpOTPFragmentEmailTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="3dp"
-            android:text="@string/_91_1234567890"
+            android:text="example@gmail.com"
             android:textColor="@color/white"
             android:textSize="18sp" />
 
@@ -47,7 +47,7 @@
 
 
     <EditText
-        android:id="@+id/signInOTPFragmentOtpET"
+        android:id="@+id/signUpOTPFragmentOtpET"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:background="@drawable/button_shape_design"
@@ -68,7 +68,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/signInOTPFragmentVerifyBT"
+        android:id="@+id/signUpOTPFragmentVerifyBT"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
@@ -83,13 +83,13 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
-        android:id="@+id/signInOTPFragmentPB"
+        android:id="@+id/signUpOTPFragmentPB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/signInOTPFragmentVerifyBT"
-        app:layout_constraintEnd_toEndOf="@+id/signInOTPFragmentVerifyBT"
-        app:layout_constraintStart_toStartOf="@+id/signInOTPFragmentVerifyBT"
-        app:layout_constraintTop_toTopOf="@+id/signInOTPFragmentVerifyBT" />
+        app:layout_constraintBottom_toBottomOf="@+id/signUpOTPFragmentVerifyBT"
+        app:layout_constraintEnd_toEndOf="@+id/signUpOTPFragmentVerifyBT"
+        app:layout_constraintStart_toStartOf="@+id/signUpOTPFragmentVerifyBT"
+        app:layout_constraintTop_toTopOf="@+id/signUpOTPFragmentVerifyBT" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -98,7 +98,7 @@
         android:layout_marginBottom="30dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/signInOTPFragmentVerifyBT">
+        app:layout_constraintEnd_toEndOf="@+id/signUpOTPFragmentVerifyBT">
 
         <TextView
             android:id="@+id/resendOTPTV"

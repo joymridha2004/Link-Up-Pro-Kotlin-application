@@ -1,10 +1,12 @@
 package com.example.linkup.authentication
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
 import android.os.Vibrator
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,29 +22,38 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 
 class SignInFragment : Fragment() {
+    //Binding to xml layout
     private lateinit var binding: FragmentSignInBinding
+
+    //Firebase authentication
     private lateinit var mAuth: FirebaseAuth
-    private lateinit var fStore: FirebaseFirestore
+
+    //Layout functionality variable
     private var phoneIsEmpty: Boolean = true
     private var phoneNumber: String? = null
+
+    //Vibration component
     private lateinit var vibrator: Vibrator
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        //Binding to xml layout
         binding = FragmentSignInBinding.inflate(inflater, container, false)
-        mAuth = FirebaseAuth.getInstance()
-        fStore = FirebaseFirestore.getInstance()
-        vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        //Night mode disable
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
+        //Firebase instance create
+        mAuth = FirebaseAuth.getInstance()
+        //Vibration instance create
+        vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        //Country code link to phone number edittext
         binding.signInFragmentCCP.registerCarrierNumberEditText(binding.signInFragmentPhoneNoET)
 
+        //Fetch phone number from edittext
         binding.signInFragmentPhoneNoET.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence?,
@@ -59,14 +70,16 @@ class SignInFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        binding.signInFragmentLoginButton.setOnClickListener {
+        //Handle action to login button
+        binding.signInFragmentLoginBT.setOnClickListener {
+            vibrator.vibrate(100)
             phoneNumber = "+" + binding.signInFragmentCCP.fullNumber
             binding.signInFragmentPhoneNoET.clearFocus()
-            vibrator.vibrate(100)
             if (!phoneIsEmpty) {
+                //Disable all element
+                workInProgressStart()
+                //Firebase authentication process start
                 initiatePhoneNumberVerification()
-                binding.signInFragmentLoginButton.visibility = View.INVISIBLE
-                binding.signInFragmentPB.visibility = View.VISIBLE
             } else {
                 showToast("Please enter a valid number")
             }
@@ -74,10 +87,29 @@ class SignInFragment : Fragment() {
         return binding.root
     }
 
+    //Elements enable and disable function
+    private fun workInProgressStart() {
+        binding.signInFragmentCCP.isEnabled = false
+        binding.signInFragmentPhoneNoET.isEnabled = false
+        binding.signInFragmentLoginBT.isEnabled = false
+        binding.signInFragmentLoginBT.visibility = View.INVISIBLE
+        binding.signInFragmentPB.visibility = View.VISIBLE
+    }
+
+    private fun workInProgressEnd() {
+        binding.signInFragmentCCP.isEnabled = true
+        binding.signInFragmentPhoneNoET.isEnabled = true
+        binding.signInFragmentLoginBT.isEnabled = true
+        binding.signInFragmentLoginBT.visibility = View.VISIBLE
+        binding.signInFragmentPB.visibility = View.INVISIBLE
+    }
+
+    //Show text from Toast function
     private fun showToast(message: String) {
         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
+    //Firebase authentication configuration and code send function
     private fun initiatePhoneNumberVerification() {
         val options = PhoneAuthOptions.newBuilder(mAuth)
             .setPhoneNumber(phoneNumber!!) // Phone number to verify
@@ -96,19 +128,18 @@ class SignInFragment : Fragment() {
         override fun onVerificationFailed(e: FirebaseException) {
             when (e) {
                 is FirebaseAuthInvalidCredentialsException -> showToast("Invalid phone number")
-                is FirebaseTooManyRequestsException -> showToast("Quota exceeded")
-                else -> showToast("Verification failed: ${e.message}")
+                is FirebaseTooManyRequestsException -> showToast("all OTP for this number have use today")
+                else -> showToast("Verification failed")
             }
-            binding.signInFragmentLoginButton.visibility = View.VISIBLE
-            binding.signInFragmentPB.visibility = View.INVISIBLE
+            Log.d(TAG, "onVerificationFailed: ${e.message}")
+            workInProgressEnd()
         }
 
         override fun onCodeSent(
             verificationId: String,
             token: PhoneAuthProvider.ForceResendingToken
         ) {
-            binding.signInFragmentLoginButton.visibility = View.VISIBLE
-            binding.signInFragmentPB.visibility = View.INVISIBLE
+            workInProgressEnd()
             val direction = SignInFragmentDirections.actionSignInFragmentToSignInOtpFragment(
                 phoneNumber!!,
                 verificationId,
@@ -122,13 +153,13 @@ class SignInFragment : Fragment() {
         mAuth.signInWithCredential(credential).addOnCompleteListener(requireActivity()) { task ->
             if (task.isSuccessful) {
                 showToast("Something wrong")
-                binding.signInFragmentLoginButton.visibility = View.VISIBLE
-                binding.signInFragmentPB.visibility = View.INVISIBLE
+                workInProgressEnd()
+                mAuth.signOut()
             } else {
                 showToast("Sign in failed: ${task.exception?.message}")
-                binding.signInFragmentLoginButton.visibility = View.VISIBLE
-                binding.signInFragmentPB.visibility = View.INVISIBLE
+                workInProgressEnd()
             }
         }
     }
+
 }
