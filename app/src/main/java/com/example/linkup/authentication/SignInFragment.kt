@@ -90,6 +90,7 @@ class SignInFragment : Fragment() {
     //Elements enable and disable function
     private fun workInProgressStart() {
         binding.signInFragmentCCP.isEnabled = false
+        binding.signInFragmentCCP.isEnabled = false
         binding.signInFragmentPhoneNoET.isEnabled = false
         binding.signInFragmentLoginBT.isEnabled = false
         binding.signInFragmentLoginBT.visibility = View.INVISIBLE
@@ -97,6 +98,7 @@ class SignInFragment : Fragment() {
     }
 
     private fun workInProgressEnd() {
+        binding.signInFragmentCCP.isEnabled = true
         binding.signInFragmentCCP.isEnabled = true
         binding.signInFragmentPhoneNoET.isEnabled = true
         binding.signInFragmentLoginBT.isEnabled = true
@@ -133,6 +135,7 @@ class SignInFragment : Fragment() {
             }
             Log.d(TAG, "onVerificationFailed: ${e.message}")
             workInProgressEnd()
+            SplashFragment.setLoginStatus(requireContext(), false)
         }
 
         override fun onCodeSent(
@@ -155,9 +158,11 @@ class SignInFragment : Fragment() {
                 showToast("Something wrong")
                 workInProgressEnd()
                 mAuth.signOut()
+                SplashFragment.setLoginStatus(requireContext(), false)
             } else {
                 showToast("Sign in failed: ${task.exception?.message}")
                 workInProgressEnd()
+                SplashFragment.setLoginStatus(requireContext(), false)
             }
         }
     }

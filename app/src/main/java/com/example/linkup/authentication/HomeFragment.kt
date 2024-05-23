@@ -1,20 +1,96 @@
 package com.example.linkup.authentication
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.linkup.R
+import com.example.linkup.databinding.FragmentHomeBinding
+import com.example.linkup.databinding.FragmentSplashBinding
+import com.google.api.LogDescriptor
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeFragment : Fragment() {
-
+    private lateinit var binding: FragmentHomeBinding
+    private val args: HomeFragmentArgs by navArgs()
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var fStore: FirebaseFirestore
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        //Night mode disable
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        // Initialize Firebase and other services
+        mAuth = FirebaseAuth.getInstance()
+        fStore = FirebaseFirestore.getInstance()
+        // Update all details in SharedPreferences
+        fetchUserDetailsThenUpdate {}
+        binding.homeFragmentTV.text ="Home Fragment"
+
+        binding.HomeFragmentLogoutButton.setOnClickListener {
+            mAuth.signOut()
+            sendToSignIn()
+        }
+
+        return binding.root
+    }
+
+    private fun sendToSignIn() {
+        SplashFragment.setLoginStatus(requireContext(), false)
+        findNavController().navigate(R.id.action_homeFragment_to_signInFragment)
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun fetchUserDetailsThenUpdate(callback: () -> Unit) {
+        val userUid = args.userUid
+        val documentReference = fStore.collection("usersDetails").document(userUid)
+
+        documentReference.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    SplashFragment.setUserUid(requireContext(), args.userUid)
+                    SplashFragment.setUserName(
+                        requireContext(),
+                        documentSnapshot.getString("userName").toString()
+                    )
+                    SplashFragment.setUserPhoneNumber(
+                        requireContext(),
+                        documentSnapshot.getString("userPhoneNumber").toString()
+                    )
+                    SplashFragment.setUserEmailId(
+                        requireContext(),
+                        documentSnapshot.getString("userEmailId").toString()
+                    )
+                    SplashFragment.setUserPassword(
+                        requireContext(),
+                        documentSnapshot.getString("userPassword").toString()
+                    )
+                    Log.d("TAG", "User details fetched successfully")
+                } else {
+                    Log.e("TAG", "No such document found for user $userUid")
+                    showToast("No user details found")
+                }
+                callback()
+            }
+            .addOnFailureListener { e ->
+                Log.e("TAG", "Error fetching user details: ${e.message}")
+                showToast("Error fetching user details")
+                callback()
+            }
     }
 
 }

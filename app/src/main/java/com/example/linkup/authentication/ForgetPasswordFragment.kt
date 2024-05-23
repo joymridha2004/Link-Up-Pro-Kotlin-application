@@ -160,11 +160,13 @@ class ForgetPasswordFragment : Fragment() {
     }
 
     private fun sendToSignIn() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         mAuth.signOut()
         findNavController().navigate(R.id.action_forgetPasswordFragment_to_signInFragment)
     }
 
     private fun sendToHome() {
+        SplashFragment.setLoginStatus(requireContext(), true)
         val direction =
             ForgetPasswordFragmentDirections.actionForgetPasswordFragmentToHomeFragment(
                 args.phoneNumber,

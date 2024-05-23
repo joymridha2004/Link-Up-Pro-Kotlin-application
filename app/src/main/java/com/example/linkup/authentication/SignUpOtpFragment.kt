@@ -203,6 +203,7 @@ class SignUpOtpFragment : Fragment() {
 
     //Coming fragment
     private fun sendToHome() {
+        SplashFragment.setLoginStatus(requireContext(), true)
         val direction =
             SignUpOtpFragmentDirections.actionSignUpOtpFragmentToHomeFragment(
                 args.phoneNumber,
@@ -212,6 +213,7 @@ class SignUpOtpFragment : Fragment() {
     }
 
     private fun sendToSignIn() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         mAuth.signOut()
         findNavController().navigate(R.id.action_signUpOtpFragment_to_signInFragment)
     }

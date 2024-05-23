@@ -206,12 +206,14 @@ class SignInOtpFragment : Fragment() {
                     }
                 } else {
                     workInProgressEnd()
+                    sendToSignIn()
                     showToast("Error fetching user data!")
                     Log.d("TAG", "Task is unsuccessful: ${task.exception.toString()}")
                 }
             }
         } else {
             workInProgressEnd()
+            sendToSignIn()
             showToast("Internal error!")
             Log.d("TAG", "UserUid is null")
         }
@@ -219,6 +221,7 @@ class SignInOtpFragment : Fragment() {
 
     // Coming fragment
     private fun sendToSignUp() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         val direction =
             SignInOtpFragmentDirections.actionSignInOtpFragmentToSignUpFragment(
                 args.phoneNumber,
@@ -228,6 +231,7 @@ class SignInOtpFragment : Fragment() {
     }
 
     private fun sendToHome() {
+        SplashFragment.setLoginStatus(requireContext(), true)
         val direction =
             SignInOtpFragmentDirections.actionSignInOtpFragmentToHomeFragment(
                 args.phoneNumber,
@@ -236,7 +240,13 @@ class SignInOtpFragment : Fragment() {
         findNavController().navigate(direction)
     }
 
+    private fun sendToSignIn() {
+        SplashFragment.setLoginStatus(requireContext(), false)
+        findNavController().navigate(R.id.action_signInOtpFragment_to_signInFragment)
+    }
+
     private fun sendToTwoStepVerification() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         val direction =
             SignInOtpFragmentDirections.actionSignInOtpFragmentToStepTwoVerificationFragment(
                 args.phoneNumber,

@@ -104,6 +104,7 @@ class ForgetPasswordOtpFragment : Fragment() {
     }
 
     private fun sendToForgetPassword() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         val direction =
             ForgetPasswordOtpFragmentDirections.actionForgetPasswordOtpFragmentToForgetPasswordFragment(
                 args.phoneNumber,
@@ -111,6 +112,12 @@ class ForgetPasswordOtpFragment : Fragment() {
             )
         findNavController().navigate(direction)
     }
+
+    //set on onBackPress action
+    private fun sendToSignIn() {
+       findNavController().navigate(R.id.action_forgetPasswordOtpFragment_to_signInFragment)
+    }
+
 
     private fun workInProgressEnd() {
         binding.forgetPasswordOtpFragmentOtpET.isEnabled = true

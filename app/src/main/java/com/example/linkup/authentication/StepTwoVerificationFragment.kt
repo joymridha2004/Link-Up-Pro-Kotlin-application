@@ -127,7 +127,6 @@ class StepTwoVerificationFragment : Fragment() {
                         } else {
                             workInProgressEnd()
                             showToast("Incorrect password. Please try again.")
-                            sendToSignIn()
                         }
                     } else {
                         workInProgressEnd()
@@ -143,7 +142,6 @@ class StepTwoVerificationFragment : Fragment() {
                 }
                 .addOnCompleteListener {
                     workInProgressEnd()
-                    sendToSignIn()
                 }
         } else {
             workInProgressEnd()
@@ -174,6 +172,8 @@ class StepTwoVerificationFragment : Fragment() {
                 } else {
                     Log.e("TAG", "No such document found for user $userUid")
                     showToast("No user details found")
+                    workInProgressEnd()
+                    sendToSignIn()
                 }
                 callback()
             }
@@ -181,10 +181,13 @@ class StepTwoVerificationFragment : Fragment() {
                 Log.e("TAG", "Error fetching user details: ${e.message}")
                 showToast("Error fetching user details: ${e.message}")
                 callback()
+                workInProgressEnd()
+                sendToSignIn()
             }
     }
 
     private fun sendToForgetPasswordOtp() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         val direction =
             StepTwoVerificationFragmentDirections.actionStepTwoVerificationFragmentToForgetPasswordOtpFragment(
                 args.phoneNumber,
@@ -197,6 +200,7 @@ class StepTwoVerificationFragment : Fragment() {
     }
 
     private fun sendToHome() {
+        SplashFragment.setLoginStatus(requireContext(), true)
         val direction =
             StepTwoVerificationFragmentDirections.actionStepTwoVerificationFragmentToHomeFragment(
                 args.phoneNumber,
@@ -206,6 +210,7 @@ class StepTwoVerificationFragment : Fragment() {
     }
 
     private fun sendToSignIn() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         // Before navigating, ensure we are in the correct fragment context
         val navController = findNavController()
         Log.d("NavigationDebug", "Current Destination: ${navController.currentDestination?.label}")

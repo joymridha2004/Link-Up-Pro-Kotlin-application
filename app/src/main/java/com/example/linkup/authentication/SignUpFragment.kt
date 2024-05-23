@@ -76,8 +76,7 @@ class SignUpFragment : Fragment() {
     private var rightIcon: Drawable? = null
 
     private var redColor: Int = 0
-    private var whiteColor: Int = 0
-    private var white20Color: Int = 0
+    private var blackColor: Int = 0
     private val sendEmail = SendEmail()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -101,15 +100,15 @@ class SignUpFragment : Fragment() {
         vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         //Set color
         redColor = ContextCompat.getColor(requireActivity(), R.color.red20)
-        whiteColor = ContextCompat.getColor(requireActivity(), R.color.white)
-        white20Color = ContextCompat.getColor(requireActivity(), R.color.white20)
+        blackColor = ContextCompat.getColor(requireActivity(), R.color.black)
+
 
         // Fetch user name from the EditText
         binding.signUpFragmentNameET.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.signUpFragmentNameET.setHintTextColor(white20Color)
-                binding.signUpFragmentNameET.setTextColor(whiteColor)
+                binding.signUpFragmentNameET.setHintTextColor(blackColor)
+                binding.signUpFragmentNameET.setTextColor(blackColor)
                 name = binding.signUpFragmentNameET.text.toString()
                 if (!name.equals("")) {
                     nameIsEmpty = false
@@ -127,8 +126,8 @@ class SignUpFragment : Fragment() {
         binding.signUpFragmentEmailET.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.signUpFragmentEmailET.setHintTextColor(white20Color)
-                binding.signUpFragmentEmailET.setTextColor(whiteColor)
+                binding.signUpFragmentEmailET.setHintTextColor(blackColor)
+                binding.signUpFragmentEmailET.setTextColor(blackColor)
                 email = binding.signUpFragmentEmailET.text.toString()
                 if (email.toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex())) {
                     binding.signUpFragmentEmailET.setCompoundDrawables(null, null, rightIcon, null)
@@ -144,8 +143,8 @@ class SignUpFragment : Fragment() {
 
         // Fetch user DOB from the TextView
         binding.signUpFragmentDOBTV.setOnClickListener {
-            binding.signUpFragmentDOBTV.setHintTextColor(white20Color)
-            binding.signUpFragmentDOBTV.setTextColor(whiteColor)
+            binding.signUpFragmentDOBTV.setHintTextColor(blackColor)
+            binding.signUpFragmentDOBTV.setTextColor(blackColor)
             getDOB()
             dob = binding.signUpFragmentDOBTV.text.toString()
         }
@@ -263,11 +262,13 @@ class SignUpFragment : Fragment() {
 
     // Coming fragment
     private fun sendToSignIn() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         mAuth.signOut()
         findNavController().navigate(R.id.action_signUpFragment_to_signInFragment)
     }
 
     private fun sendToSignUpOtp() {
+        SplashFragment.setLoginStatus(requireContext(), false)
         val direction =
             SignUpFragmentDirections.actionSignUpFragmentToSignUpOtpFragment(
                 args.phoneNumber,
