@@ -1,6 +1,12 @@
 package com.example.linkup.authentication
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Vibrator
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.linkup.R
 import com.example.linkup.databinding.FragmentForgetPasswordOtpBinding
 import com.example.linkup.utility.SendEmail
 import com.google.firebase.auth.FirebaseAuth
@@ -15,6 +22,9 @@ import com.google.firebase.auth.FirebaseAuth
 class ForgetPasswordOtpFragment : Fragment() {
     //Binding to xml layout
     private lateinit var binding: FragmentForgetPasswordOtpBinding
+
+    //Vibration component
+    private lateinit var vibrator: Vibrator
 
     //Firebase authentication
     private lateinit var mAuth: FirebaseAuth
@@ -25,6 +35,7 @@ class ForgetPasswordOtpFragment : Fragment() {
     //Local variable
     private var typeCode: String? = null
     private var verificationCode: String? = null
+    private var resendOtpProcess = false
 
     private var sendEmail = SendEmail()
 
@@ -40,9 +51,12 @@ class ForgetPasswordOtpFragment : Fragment() {
         binding.forgetPasswordOtpFragmentEmailTV.text = args.email
         //Fetch otp previous fragment
         verificationCode = args.verificationCode
+        //Vibration instance create
+        vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         //Handle action to verify button
         binding.forgetPasswordOtpFragmentVerifyButton.setOnClickListener {
+            vibrator.vibrate(100)
             //Fetch otp form user
             typeCode = binding.forgetPasswordOtpFragmentOtpET.text.toString()
             if (typeCode!!.length == 6) {
@@ -62,12 +76,31 @@ class ForgetPasswordOtpFragment : Fragment() {
 
         //Handle to action resend otp
         binding.resendOTPTV.setOnClickListener {
-            workinProgressStart()
-            verificationCode = sendEmail.sendEmailOtp(args.email, args.name)
-            workInProgressEnd()
+            vibrator.vibrate(100)
+            if (!resendOtpProcess) {
+                workinProgressStart()
+                verificationCode = sendEmail.sendEmailOtp(args.email, args.name)
+                workInProgressEnd()
+                resendOTPTvVisibility()
+            } else {
+                showToast("Email already send")
+            }
         }
 
         return binding.root
+    }
+
+    //Resend otp mode ui
+    @SuppressLint("ResourceAsColor")
+    private fun resendOTPTvVisibility() {
+        resendOtpProcess = true
+        binding.resendOTPTV.setTextColor(Color.RED)
+        binding.resendOTPTV.setText("Waiting for 1 minute")
+        Handler(Looper.myLooper()!!).postDelayed({
+            binding.resendOTPTV.setTextColor(Color.BLACK)
+            binding.resendOTPTV.setText(R.string.resend_otp)
+            resendOtpProcess = false
+        }, 60000)
     }
 
     private fun sendToForgetPassword() {

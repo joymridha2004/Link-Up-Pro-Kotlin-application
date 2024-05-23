@@ -4,17 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/themeColor"
     tools:context=".authentication.SignUpFragment">
 
     <LinearLayout
-        android:layout_marginTop="70dp"
         android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
         android:minWidth="330dp"
-        android:visibility="visible"
         android:orientation="vertical"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,18 +22,17 @@
             android:id="@+id/nameTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
             android:text="@string/name"
-            android:textColor="@color/white50"
             android:textSize="16sp" />
 
         <EditText
             android:id="@+id/signUpFragmentNameET"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:fontFamily="@font/roboto"
             android:hint="@string/enter_your_name"
             android:inputType="text"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white20"
             android:textSize="16sp"
             tools:ignore="Autofill" />
 
@@ -42,18 +40,17 @@
             android:id="@+id/phoneNumberTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
             android:text="@string/phone_number"
-            android:textColor="@color/white50"
             android:textSize="16sp" />
 
         <TextView
             android:id="@+id/signUpFragmentPhoneNumberTV"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:fontFamily="@font/roboto"
             android:gravity="center_vertical"
             android:text="@string/_91_1234567890"
-            android:textColor="@color/white50"
-            android:textColorHint="@color/white20"
             android:textSize="16sp"
             app:drawableEndCompat="@drawable/right_icon"
             tools:ignore="Autofill,TextFields" />
@@ -62,18 +59,17 @@
             android:id="@+id/emailTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
             android:text="@string/email"
-            android:textColor="@color/white50"
             android:textSize="16sp" />
 
         <EditText
             android:id="@+id/signUpFragmentEmailET"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:fontFamily="@font/roboto"
             android:hint="@string/enter_your_email"
             android:inputType="textEmailAddress"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white20"
             android:textSize="16sp"
             tools:ignore="Autofill" />
 
@@ -81,8 +77,8 @@
             android:id="@+id/dobTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
             android:text="@string/date_of_birth"
-            android:textColor="@color/white50"
             android:textSize="16sp" />
 
         <TextView
@@ -90,9 +86,8 @@
             style="@android:style/Widget.Holo.Spinner"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:fontFamily="@font/roboto"
             android:hint="@string/enter_your_dob"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white20"
             android:textSize="16sp"
             tools:ignore="Autofill" />
 
@@ -104,6 +99,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
         android:background="@drawable/button_shape_design"
+        android:elevation="15dp"
+        android:fontFamily="@font/roboto_bold"
         android:text="@string/next"
         android:textAllCaps="false"
         android:textColor="@color/white"
@@ -117,6 +114,7 @@
         android:id="@+id/signUpActivityPB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminateTint="@color/themeColor"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/signUpFragmentNextBT"
         app:layout_constraintEnd_toEndOf="@+id/signUpFragmentNextBT"
@@ -139,8 +137,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
+            android:fontFamily="@font/roboto_bold"
             android:text="@string/already_have_an_account"
-            android:textColor="@color/white"
             android:textSize="16sp" />
 
         <TextView
@@ -148,6 +146,7 @@
             android:layout_width="60dp"
             android:layout_height="30dp"
             android:layout_marginStart="5dp"
+            android:fontFamily="@font/roboto_medium"
             android:gravity="center"
             android:text="@string/sign_in"
             android:textColor="@color/red"

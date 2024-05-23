@@ -165,6 +165,7 @@ class SignUpFragment : Fragment() {
         }
 
         binding.signUpFragmentSignInTV.setOnClickListener {
+            vibrator.vibrate(100)
             workInProgressStart()
             sendToSignIn()
             workInProgressEnd()

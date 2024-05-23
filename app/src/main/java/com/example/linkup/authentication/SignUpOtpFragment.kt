@@ -3,8 +3,12 @@ package com.example.linkup.authentication
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Vibrator
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
@@ -42,10 +46,14 @@ class SignUpOtpFragment : Fragment() {
     //Firebase database
     private lateinit var fStore: FirebaseFirestore
 
+    //Vibration component
+    private lateinit var vibrator: Vibrator
+
     //Local variable
     private val password: String = "admin@1234"
     private var typeCode: String? = null
     private var verificationCode: String? = null
+    private var resendOtpProcess = false
 
     private val sendEmail = SendEmail()
     override fun onCreateView(
@@ -63,9 +71,12 @@ class SignUpOtpFragment : Fragment() {
         typeCode = binding.signUpOTPFragmentOtpET.text.toString()
         //Fetch otp previous fragment
         verificationCode = args.verificationCode
+        //Vibration instance create
+        vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         //Handle action to verify button
         binding.signUpOTPFragmentVerifyBT.setOnClickListener {
+            vibrator.vibrate(100)
             typeCode = binding.signUpOTPFragmentOtpET.text.toString()
             if (typeCode!!.length == 6) {
                 if (typeCode == verificationCode) {
@@ -81,9 +92,15 @@ class SignUpOtpFragment : Fragment() {
 
         //Handle action to resend otp button
         binding.resendOTPTV.setOnClickListener {
-            workInProgressStart()
-            verificationCode = sendEmail.sendEmailOtp(args.email, args.name)
-            workInProgressEnd()
+            vibrator.vibrate(100)
+            if (!resendOtpProcess) {
+                workInProgressStart()
+                verificationCode = sendEmail.sendEmailOtp(args.email, args.name)
+                workInProgressEnd()
+                resendOTPTvVisibility()
+            } else {
+                showToast("Email already send")
+            }
         }
 
         return binding.root
@@ -109,6 +126,18 @@ class SignUpOtpFragment : Fragment() {
     //Show text from Toast function
     private fun showToast(message: String) {
         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    //Resend otp mode ui
+    private fun resendOTPTvVisibility() {
+        resendOtpProcess = true
+        binding.resendOTPTV.setTextColor(Color.RED)
+        binding.resendOTPTV.setText("Waiting for 1 minute")
+        Handler(Looper.myLooper()!!).postDelayed({
+            binding.resendOTPTV.setTextColor(Color.BLACK)
+            binding.resendOTPTV.setText(R.string.resend_otp)
+            resendOtpProcess = false
+        }, 60000)
     }
 
     //Update user data from firebase

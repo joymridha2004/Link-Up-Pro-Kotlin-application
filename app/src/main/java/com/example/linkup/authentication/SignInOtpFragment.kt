@@ -45,7 +45,7 @@ class SignInOtpFragment : Fragment() {
 
     //Layout functionality variable
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
-    private var verificationInProgress = false
+    private var resendOtpProcess = false
     private var userUid: String? = null
     private var email: String? = null
     private var twoStepVerification: Boolean? = null
@@ -70,27 +70,27 @@ class SignInOtpFragment : Fragment() {
             vibrator.vibrate(100)
             //Fetch otp from user
             val typeOTP = binding.signInOTPFragmentOtpET.text
-            if (!verificationInProgress) {
-                if (typeOTP.length == 6) {
-                    //Disable all element
-                    workInProgressStart()
-                    val credential = PhoneAuthProvider.getCredential(args.otp, typeOTP.toString())
-                    signInWithPhoneAuthCredential(credential)
-                } else {
-                    showToast("Please enter a 6-digit OTP.")
-                }
+            if (typeOTP.length == 6) {
+                //Disable all element
+                workInProgressStart()
+                val credential = PhoneAuthProvider.getCredential(args.otp, typeOTP.toString())
+                signInWithPhoneAuthCredential(credential)
+            } else {
+                showToast("Please enter a 6-digit OTP.")
             }
         }
 
         //Handle action to resend otp
         binding.resendOTPTV.setOnClickListener {
-            if (!verificationInProgress) {
-                vibrator.vibrate(100)
+            vibrator.vibrate(100)
+            if (!resendOtpProcess) {
                 //Disable all element
                 workInProgressStart()
                 //Resend otp
                 resendVerificationCode()
                 resendOTPTvVisibility()
+            }else{
+                showToast("Otp already send")
             }
         }
         return binding.root
@@ -116,15 +116,13 @@ class SignInOtpFragment : Fragment() {
     //Resend otp mode ui
     @SuppressLint("ResourceAsColor")
     private fun resendOTPTvVisibility() {
-        verificationInProgress = true
-        binding.resendOTPTV.isEnabled = false
+        resendOtpProcess = true
         binding.resendOTPTV.setTextColor(Color.RED)
         binding.resendOTPTV.setText("Waiting for 1 minute")
         Handler(Looper.myLooper()!!).postDelayed({
-            binding.resendOTPTV.setTextColor(Color.WHITE)
-            binding.resendOTPTV.isEnabled = true
+            binding.resendOTPTV.setTextColor(Color.BLACK)
             binding.resendOTPTV.setText(R.string.resend_otp)
-            verificationInProgress = false
+            resendOtpProcess = false
         }, 60000)
     }
 

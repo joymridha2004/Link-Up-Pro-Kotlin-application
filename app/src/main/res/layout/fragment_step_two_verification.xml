@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/themeColor"
     tools:context=".authentication.StepTwoVerificationFragment">
 
     <TextView
@@ -14,8 +13,8 @@
         android:layout_marginTop="70dp"
         android:justificationMode="inter_word"
         android:maxWidth="300dp"
+        android:fontFamily="@font/roboto_medium"
         android:text="@string/step_2_verification_message"
-        android:textColor="@color/white50"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,20 +38,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/enter_password"
-            android:textColorHint="@color/white20"
             android:textSize="16sp"
-            app:counterEnabled="true"
-            app:counterMaxLength="16"
             app:helperTextTextAppearance="@color/red"
-            app:hintTextColor="@color/white50"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/step2VerificationFragmentPasswordTIET"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:fontFamily="@font/roboto"
                 android:inputType="textPassword"
-                android:textColor="@color/white"
                 android:textSize="16sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -66,10 +61,12 @@
         android:layout_marginBottom="50dp"
         android:background="@drawable/button_shape_design"
         android:text="@string/verify"
+        android:fontFamily="@font/roboto_bold"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:elevation="15dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -78,6 +75,7 @@
         android:id="@+id/step2VerificationFragmentPB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminateTint="@color/themeColor"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/step2VerificationFragmentVerifyBT"
         app:layout_constraintEnd_toEndOf="@+id/step2VerificationFragmentVerifyBT"
@@ -99,8 +97,8 @@
             android:layout_height="40dp"
             android:layout_marginStart="3dp"
             android:gravity="center"
+            android:fontFamily="@font/roboto_medium"
             android:text="@string/forget_password"
-            android:textColor="@color/white"
             android:textSize="16sp" />
 
     </LinearLayout>

@@ -89,10 +89,14 @@ class ForgetPasswordFragment : Fragment() {
 
         //Handle action to verify Button
         binding.ForgetPasswordFragmentNextBT.setOnClickListener {
+            vibrator.vibrate(100)
             if (newPassword == newConfirmPassword) {
-                workInProgressStart()
-                vibrator.vibrate(100)
-                updatePassword()
+                if (newPassword!!.length > 6) {
+                    workInProgressStart()
+                    updatePassword()
+                } else {
+                    showToast("Minimum password contain 6 character")
+                }
             } else {
                 showToast("Password mismatch")
             }
