@@ -12,7 +12,7 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
 class SendEmail {
-    fun sendEmailOtp(receiverEmail: String,receiverName: String): String{
+    fun sendEmailOtp(receiverEmail: String, receiverName: String): String {
         val stringSenderEmail = "linkuppro2024@gmail.com"
         val stringPasswordSenderEmail = "dbfnbqktghijajtj"
         val stringReceiverEmail =
@@ -43,6 +43,71 @@ class SendEmail {
         ).execute()
         return verificationCode
     }
+
+    fun sendWelcomeEmail(receiverEmail: String, receiverName: String) {
+        val stringSenderEmail = "linkuppro2024@gmail.com"
+        val stringPasswordSenderEmail = "dbfnbqktghijajtj"
+        val stringReceiverEmail =
+            receiverEmail // Assuming you want to send an email to the entered email address
+        val stringSubject = "Welcome to Link Up Pro, $receiverName!"
+
+        val stringBody = """
+        Hello $receiverName,
+
+        Welcome to Link Up Pro! We're thrilled to have you join our community. Link Up Pro is your new go-to app for chatting with friends and connecting with people just like you do on social media.
+
+        Here’s how you can make the most out of Link Up Pro:
+        
+        - **Chat with Friends:** Start private or group chats, share media, and stay connected with your friends and family.
+        - **Connect and Share:** Create your profile, post updates, share photos and videos, and connect with new people.
+        - **Discover Content:** Explore posts, join groups, and follow topics that interest you.
+
+        We're here to make sure you have the best experience. If you have any questions or need help, our support team is just a message away.
+
+        Get ready to discover, connect, and share with Link Up Pro!
+
+        Best regards,
+        The Link Up Pro Team
+    """.trimIndent()
+
+        SendMail(
+            stringSenderEmail,
+            stringPasswordSenderEmail,
+            stringReceiverEmail,
+            stringSubject,
+            stringBody
+        ).execute()
+    }
+
+    fun sendPasswordResetSuccessEmail(receiverEmail: String, receiverName: String) {
+        val stringSenderEmail = "linkuppro2024@gmail.com"
+        val stringPasswordSenderEmail = "dbfnbqktghijajtj"
+        val stringReceiverEmail =
+            receiverEmail // Assuming you want to send an email to the entered email address
+        val stringSubject = "Password Reset Successful - Link Up Pro"
+
+        val stringBody = """
+        Hello $receiverName,
+
+        Your password for Link Up Pro has been successfully reset. You can now log in to your account using your new password.
+
+        If you didn't request this change, please contact us immediately to secure your account.
+
+        If you have any questions or need further assistance, feel free to reach out to our support team.
+
+        Best regards,
+        The Link Up Pro Team
+    """.trimIndent()
+
+        SendMail(
+            stringSenderEmail,
+            stringPasswordSenderEmail,
+            stringReceiverEmail,
+            stringSubject,
+            stringBody
+        ).execute()
+    }
+
 
     private class SendMail(
         private val stringSenderEmail: String,

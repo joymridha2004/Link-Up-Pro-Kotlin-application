@@ -1,5 +1,6 @@
 package com.example.linkup.authentication
 
+import ShowToast
 import android.content.Context
 import android.os.Bundle
 import android.os.Vibrator
@@ -17,6 +18,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.linkup.R
 import com.example.linkup.databinding.FragmentForgetPasswordBinding
 import com.example.linkup.databinding.FragmentForgetPasswordOtpBinding
+import com.example.linkup.utility.SendEmail
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -39,6 +41,10 @@ class ForgetPasswordFragment : Fragment() {
     //Local variable
     private var newPassword: String? = null
     private var newConfirmPassword: String? = null
+
+    private val sendEmail = SendEmail()
+    private lateinit var showToast: ShowToast
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,6 +58,8 @@ class ForgetPasswordFragment : Fragment() {
         fStore = FirebaseFirestore.getInstance()
         //Vibration instance create
         vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        // Initialize ShowToast
+        showToast = ShowToast(requireContext())
 
         //fetch new password
         binding.ForgetPasswordFragmentNewPasswordTIET.addTextChangedListener(object : TextWatcher {
@@ -95,10 +103,10 @@ class ForgetPasswordFragment : Fragment() {
                     workInProgressStart()
                     updatePassword()
                 } else {
-                    showToast("Minimum password contain 6 character")
+                    showToast.warningToast("Minimum password contain 6 character")
                 }
             } else {
-                showToast("Password mismatch")
+                showToast.warningToast("Password mismatch")
             }
         }
         return binding.root
@@ -120,11 +128,6 @@ class ForgetPasswordFragment : Fragment() {
         binding.step2VerificationFragmentPB.visibility = View.GONE
     }
 
-    //Show text from Toast function
-    private fun showToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-    }
-
     private fun updatePassword() {
         val userUid = args.userUid
         val documentReference = fStore.collection("usersDetails").document(userUid)
@@ -135,10 +138,11 @@ class ForgetPasswordFragment : Fragment() {
                     existingData["userPassword"] = newPassword
                     documentReference.set(existingData)
                         .addOnSuccessListener {
+                            sendEmail.sendPasswordResetSuccessEmail(args.email, args.name)
                             workInProgressEnd()
                             Log.d("TAG", "Password updated successfully for user $userUid")
-                            showToast("Login Successful")
-                            sendToHome()
+                            showToast.motionSuccessToast("Success", "Login Successful")
+                            sendToTwoStepVerification()
                         }
                         .addOnFailureListener { e ->
                             workInProgressEnd()
@@ -146,7 +150,7 @@ class ForgetPasswordFragment : Fragment() {
                                 "TAG",
                                 "Failed to update password for user $userUid: ${e.message}"
                             )
-                            showToast(e.message.toString())
+                            showToast.errorToast(e.message.toString())
                             sendToSignIn()
                         }
                 }
@@ -154,7 +158,7 @@ class ForgetPasswordFragment : Fragment() {
         }.addOnFailureListener { e ->
             workInProgressEnd()
             Log.e("TAG", "Error fetching user data: ${e.message}")
-            showToast(e.message.toString())
+            showToast.errorToast(e.message.toString())
             sendToSignIn()
         }
     }
@@ -165,10 +169,10 @@ class ForgetPasswordFragment : Fragment() {
         findNavController().navigate(R.id.action_forgetPasswordFragment_to_signInFragment)
     }
 
-    private fun sendToHome() {
+    private fun sendToTwoStepVerification() {
         SplashFragment.setLoginStatus(requireContext(), true)
         val direction =
-            ForgetPasswordFragmentDirections.actionForgetPasswordFragmentToHomeFragment(
+            ForgetPasswordFragmentDirections.actionForgetPasswordFragmentToStepTwoVerificationFragment(
                 args.phoneNumber,
                 args.userUid
             )

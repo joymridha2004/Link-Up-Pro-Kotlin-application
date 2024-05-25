@@ -1,5 +1,6 @@
 package com.example.linkup.authentication
 
+import ShowToast
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
@@ -38,6 +39,7 @@ class ForgetPasswordOtpFragment : Fragment() {
     private var resendOtpProcess = false
 
     private var sendEmail = SendEmail()
+    private lateinit var showToast: ShowToast
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +55,8 @@ class ForgetPasswordOtpFragment : Fragment() {
         verificationCode = args.verificationCode
         //Vibration instance create
         vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        // Initialize ShowToast
+        showToast = ShowToast(requireContext())
 
         //Handle action to verify button
         binding.forgetPasswordOtpFragmentVerifyButton.setOnClickListener {
@@ -62,14 +66,14 @@ class ForgetPasswordOtpFragment : Fragment() {
             if (typeCode!!.length == 6) {
                 if (typeCode == verificationCode) {
                     workinProgressStart()
-                    showToast("Verify successful")
+                    showToast.successToast("Verify successful")
                     sendToForgetPassword()
                     workInProgressEnd()
                 } else {
-                    showToast("Wrong password!")
+                    showToast.errorToast("Wrong password!")
                 }
             } else {
-                showToast("Please enter a 6-digit OTP.")
+                showToast.infoToast("Please enter a 6-digit OTP.")
             }
 
         }
@@ -83,7 +87,7 @@ class ForgetPasswordOtpFragment : Fragment() {
                 workInProgressEnd()
                 resendOTPTvVisibility()
             } else {
-                showToast("Email already send")
+                showToast.infoToast("Email already send")
             }
         }
 
@@ -108,16 +112,12 @@ class ForgetPasswordOtpFragment : Fragment() {
         val direction =
             ForgetPasswordOtpFragmentDirections.actionForgetPasswordOtpFragmentToForgetPasswordFragment(
                 args.phoneNumber,
-                args.userUid
+                args.userUid,
+                args.email,
+                args.name
             )
         findNavController().navigate(direction)
     }
-
-    //set on onBackPress action
-    private fun sendToSignIn() {
-       findNavController().navigate(R.id.action_forgetPasswordOtpFragment_to_signInFragment)
-    }
-
 
     private fun workInProgressEnd() {
         binding.forgetPasswordOtpFragmentOtpET.isEnabled = true
@@ -135,8 +135,4 @@ class ForgetPasswordOtpFragment : Fragment() {
         binding.resendOTPTV.isEnabled = false
     }
 
-    //Show text from Toast function
-    private fun showToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-    }
 }

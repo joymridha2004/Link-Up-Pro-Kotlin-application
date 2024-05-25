@@ -1,5 +1,6 @@
 package com.example.linkup.authentication
 
+import ShowToast
 import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Bitmap
@@ -78,6 +79,8 @@ class SignUpFragment : Fragment() {
     private var redColor: Int = 0
     private var blackColor: Int = 0
     private val sendEmail = SendEmail()
+
+    private lateinit var showToast: ShowToast
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -101,7 +104,8 @@ class SignUpFragment : Fragment() {
         //Set color
         redColor = ContextCompat.getColor(requireActivity(), R.color.red20)
         blackColor = ContextCompat.getColor(requireActivity(), R.color.black)
-
+        // Initialize ShowToast
+        showToast = ShowToast(requireContext())
 
         // Fetch user name from the EditText
         binding.signUpFragmentNameET.addTextChangedListener(object : TextWatcher {
@@ -166,8 +170,8 @@ class SignUpFragment : Fragment() {
         binding.signUpFragmentSignInTV.setOnClickListener {
             vibrator.vibrate(100)
             workInProgressStart()
-            sendToSignIn()
             workInProgressEnd()
+            sendToSignIn()
         }
 
         return binding.root
@@ -196,11 +200,6 @@ class SignUpFragment : Fragment() {
         binding.signUpFragmentSignInTV.isEnabled = true
     }
 
-    //Show text from Toast function
-    private fun showToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-    }
-
     //Get DOB from Edittext
     private fun getDOB() {
         val c = Calendar.getInstance()
@@ -217,7 +216,7 @@ class SignUpFragment : Fragment() {
                     dobIsEmpty = true
                     binding.signUpFragmentDOBTV.setCompoundDrawables(null, null, null, null)
                     binding.signUpFragmentDOBTV.setTextColor(redColor)
-                    showToast("Under 18 not allowed!")
+                    showToast.warningToast("Under 18 not allowed!")
                 } else {
                     val selectedDate = "$dayOfMonth - ${month + 1} - $year"
                     binding.signUpFragmentDOBTV.text = selectedDate
@@ -249,7 +248,7 @@ class SignUpFragment : Fragment() {
             binding.signUpFragmentDOBTV.setTextColor(redColor)
         }
         if (!allDetailsAreOk) {
-            showToast("Fill up all details!")
+            showToast.infoToast("Fill up all details!")
         }
     }
 

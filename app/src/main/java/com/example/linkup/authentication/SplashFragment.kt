@@ -33,7 +33,7 @@ class SplashFragment : Fragment() {
                 workInProgressEnd()
                 findNavController().navigate(R.id.action_splashFragment_to_signInFragment)
             }
-        },1000)
+        }, 1000)
         return binding.root
     }
 

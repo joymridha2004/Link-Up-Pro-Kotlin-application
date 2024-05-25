@@ -1,5 +1,6 @@
 package com.example.linkup.authentication
 
+import ShowToast
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Bitmap
@@ -56,6 +57,7 @@ class SignUpOtpFragment : Fragment() {
     private var resendOtpProcess = false
 
     private val sendEmail = SendEmail()
+    private lateinit var showToast: ShowToast
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,6 +75,8 @@ class SignUpOtpFragment : Fragment() {
         verificationCode = args.verificationCode
         //Vibration instance create
         vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        // Initialize ShowToast
+        showToast = ShowToast(requireContext())
 
         //Handle action to verify button
         binding.signUpOTPFragmentVerifyBT.setOnClickListener {
@@ -83,10 +87,10 @@ class SignUpOtpFragment : Fragment() {
                     workInProgressStart()
                     updateUserData()
                 } else {
-                    showToast("Wrong OTP!")
+                    showToast.errorToast("Wrong OTP!")
                 }
             } else {
-                showToast("Please enter a 6-digit OTP.")
+                showToast.infoToast("Please enter a 6-digit OTP.")
             }
         }
 
@@ -99,7 +103,7 @@ class SignUpOtpFragment : Fragment() {
                 workInProgressEnd()
                 resendOTPTvVisibility()
             } else {
-                showToast("Email already send")
+                showToast.infoToast("Email already send")
             }
         }
 
@@ -121,11 +125,6 @@ class SignUpOtpFragment : Fragment() {
         binding.resendOTPTV.isEnabled = true
         binding.signUpOTPFragmentVerifyBT.visibility = View.VISIBLE
         binding.signUpOTPFragmentPB.visibility = View.GONE
-    }
-
-    //Show text from Toast function
-    private fun showToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
     //Resend otp mode ui
@@ -172,12 +171,13 @@ class SignUpOtpFragment : Fragment() {
         fStore.collection("usersDetails").document(args.userUid.toString())
             .set(usersDetails)
             .addOnCompleteListener(OnCompleteListener<Void?> {
+                sendEmail.sendWelcomeEmail(args.email, args.name)
                 workInProgressEnd()
-                showToast("Login Successful")
+                showToast.motionSuccessToast("Success","Login Successful")
                 sendToHome()
             }).addOnFailureListener(OnFailureListener { e ->
                 workInProgressEnd()
-                showToast("Internal error!")
+                showToast.errorToast("Internal error!")
                 Log.d(TAG, "updateUserData: ${e.message}")
                 sendToSignIn()
             })

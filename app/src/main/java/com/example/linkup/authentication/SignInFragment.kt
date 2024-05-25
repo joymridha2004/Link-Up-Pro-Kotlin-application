@@ -1,5 +1,6 @@
 package com.example.linkup.authentication
 
+import ShowToast
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
@@ -11,7 +12,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.findNavController
 import com.example.linkup.databinding.FragmentSignInBinding
@@ -37,6 +37,7 @@ class SignInFragment : Fragment() {
 
     //Vibration component
     private lateinit var vibrator: Vibrator
+    private lateinit var showToast: ShowToast
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +53,8 @@ class SignInFragment : Fragment() {
         vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         //Country code link to phone number edittext
         binding.signInFragmentCCP.registerCarrierNumberEditText(binding.signInFragmentPhoneNoET)
+        // Initialize ShowToast
+        showToast = ShowToast(requireContext())
 
         //Fetch phone number from edittext
         binding.signInFragmentPhoneNoET.addTextChangedListener(object : TextWatcher {
@@ -81,7 +84,7 @@ class SignInFragment : Fragment() {
                 //Firebase authentication process start
                 initiatePhoneNumberVerification()
             } else {
-                showToast("Please enter a valid number")
+                showToast.infoToast("Please enter a valid number")
             }
         }
         return binding.root
@@ -106,11 +109,6 @@ class SignInFragment : Fragment() {
         binding.signInFragmentPB.visibility = View.INVISIBLE
     }
 
-    //Show text from Toast function
-    private fun showToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-    }
-
     //Firebase authentication configuration and code send function
     private fun initiatePhoneNumberVerification() {
         val options = PhoneAuthOptions.newBuilder(mAuth)
@@ -129,9 +127,9 @@ class SignInFragment : Fragment() {
 
         override fun onVerificationFailed(e: FirebaseException) {
             when (e) {
-                is FirebaseAuthInvalidCredentialsException -> showToast("Invalid phone number")
-                is FirebaseTooManyRequestsException -> showToast("all OTP for this number have use today")
-                else -> showToast("Verification failed")
+                is FirebaseAuthInvalidCredentialsException -> showToast.errorToast("Invalid phone number")
+                is FirebaseTooManyRequestsException -> showToast.errorToast("all OTP for this number have use today")
+                else -> showToast.errorToast("Verification failed")
             }
             Log.d(TAG, "onVerificationFailed: ${e.message}")
             workInProgressEnd()
@@ -155,16 +153,17 @@ class SignInFragment : Fragment() {
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         mAuth.signInWithCredential(credential).addOnCompleteListener(requireActivity()) { task ->
             if (task.isSuccessful) {
-                showToast("Something wrong")
-                workInProgressEnd()
                 mAuth.signOut()
+                showToast.errorToast("Something wrong")
                 SplashFragment.setLoginStatus(requireContext(), false)
-            } else {
-                showToast("Sign in failed: ${task.exception?.message}")
                 workInProgressEnd()
+            } else {
+                mAuth.signOut()
+                showToast.errorToast("Sign in failed: ${task.exception?.message}")
+                Log.e(TAG, "signInWithPhoneAuthCredential: ${task.exception?.message}")
                 SplashFragment.setLoginStatus(requireContext(), false)
+                workInProgressEnd()
             }
         }
     }
-
 }

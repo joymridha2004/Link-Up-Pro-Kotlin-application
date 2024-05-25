@@ -1,5 +1,6 @@
 package com.example.linkup.authentication
 
+import ShowToast
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -49,6 +50,7 @@ class SignInOtpFragment : Fragment() {
     private var userUid: String? = null
     private var email: String? = null
     private var twoStepVerification: Boolean? = null
+    private lateinit var showToast: ShowToast
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,6 +66,8 @@ class SignInOtpFragment : Fragment() {
         //Firebase instance create
         mAuth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
+        // Initialize ShowToast
+        showToast = ShowToast(requireContext())
 
         //Handle action to verify button
         binding.signInOTPFragmentVerifyBT.setOnClickListener {
@@ -76,7 +80,7 @@ class SignInOtpFragment : Fragment() {
                 val credential = PhoneAuthProvider.getCredential(args.otp, typeOTP.toString())
                 signInWithPhoneAuthCredential(credential)
             } else {
-                showToast("Please enter a 6-digit OTP.")
+                showToast.infoToast("Please enter a 6-digit OTP.")
             }
         }
 
@@ -89,8 +93,8 @@ class SignInOtpFragment : Fragment() {
                 //Resend otp
                 resendVerificationCode()
                 resendOTPTvVisibility()
-            }else{
-                showToast("Otp already send")
+            } else {
+                showToast.infoToast("Otp already send")
             }
         }
         return binding.root
@@ -126,11 +130,6 @@ class SignInOtpFragment : Fragment() {
         }, 60000)
     }
 
-    //Show text from Toast function
-    private fun showToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-    }
-
     //Firebase authentication configuration and code send function
     private fun resendVerificationCode() {
         val options = PhoneAuthOptions.newBuilder(mAuth)
@@ -149,7 +148,7 @@ class SignInOtpFragment : Fragment() {
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
-            showToast("Verification failed")
+            showToast.errorToast("Verification failed")
             Log.d(TAG, "onVerificationFailed: ${e.message}")
             workInProgressEnd()
         }
@@ -160,7 +159,7 @@ class SignInOtpFragment : Fragment() {
         ) {
             workInProgressEnd()
             resendToken = token
-            showToast("Verification code resent.")
+            showToast.successToast("Verification code resent.")
         }
     }
 
@@ -169,7 +168,7 @@ class SignInOtpFragment : Fragment() {
             if (task.isSuccessful) {
                 findNextActivity()
             } else {
-                showToast("Sign in failed")
+                showToast.errorToast("Sign in failed:${task.exception?.message}")
                 Log.d(TAG, "signInWithPhoneAuthCredential:${task.exception?.message}")
                 workInProgressEnd()
             }
@@ -195,7 +194,7 @@ class SignInOtpFragment : Fragment() {
                             return@addOnCompleteListener
                         }
                         // User data exists, proceed to main activity
-                        showToast("Login successful")
+                        showToast.motionSuccessToast("Success","Login successful")
                         workInProgressEnd()
                         sendToHome()
                     } else {
@@ -205,17 +204,17 @@ class SignInOtpFragment : Fragment() {
                         return@addOnCompleteListener
                     }
                 } else {
+                    showToast.errorToast("Error fetching user data!")
+                    Log.d("TAG", "Task is unsuccessful: ${task.exception.toString()}")
                     workInProgressEnd()
                     sendToSignIn()
-                    showToast("Error fetching user data!")
-                    Log.d("TAG", "Task is unsuccessful: ${task.exception.toString()}")
                 }
             }
         } else {
+            showToast.errorToast("Internal error!")
+            Log.d("TAG", "UserUid is null")
             workInProgressEnd()
             sendToSignIn()
-            showToast("Internal error!")
-            Log.d("TAG", "UserUid is null")
         }
     }
 
@@ -241,6 +240,7 @@ class SignInOtpFragment : Fragment() {
     }
 
     private fun sendToSignIn() {
+        mAuth.signOut()
         SplashFragment.setLoginStatus(requireContext(), false)
         findNavController().navigate(R.id.action_signInOtpFragment_to_signInFragment)
     }

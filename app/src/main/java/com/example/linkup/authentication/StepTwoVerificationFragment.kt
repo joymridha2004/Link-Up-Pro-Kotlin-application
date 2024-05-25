@@ -1,5 +1,6 @@
 package com.example.linkup.authentication
 
+import ShowToast
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
@@ -36,6 +37,7 @@ class StepTwoVerificationFragment : Fragment() {
     private var name: String? = null
 
     private val sendEmail = SendEmail()
+    private lateinit var showToast: ShowToast
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +51,8 @@ class StepTwoVerificationFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
         vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        // Initialize ShowToast
+        showToast = ShowToast(requireContext())
 
         // Setup listeners and initializations
         binding.step2VerificationFragmentPasswordTIET.addTextChangedListener(createTextWatcher { s ->
@@ -84,10 +88,6 @@ class StepTwoVerificationFragment : Fragment() {
         binding.step2VerificationFragmentForgetTV.isEnabled = true
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-    }
-
     private fun createTextWatcher(action: (CharSequence?) -> Unit): TextWatcher {
         return object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -101,13 +101,13 @@ class StepTwoVerificationFragment : Fragment() {
 
     private fun handlePasswordVerification() {
         if (password.isNullOrBlank()) {
-            showToast("Please enter password!")
+            showToast.infoToast("Please enter password!")
         } else {
             if (password!!.length >= 6) {
                 workInProgressStart()
                 checkPassword(password!!)
             } else {
-                showToast("Password must be at least 6 characters long!")
+                showToast.infoToast("Password must be at least 6 characters long!")
             }
         }
     }
@@ -122,21 +122,21 @@ class StepTwoVerificationFragment : Fragment() {
                         val storedPassword = document.getString("userPassword")
                         if (storedPassword == password) {
                             workInProgressEnd()
-                            showToast("Login successfully!")
+                            showToast.motionSuccessToast("Success","Login successful")
                             sendToHome()
                         } else {
                             workInProgressEnd()
-                            showToast("Incorrect password. Please try again.")
+                            showToast.errorToast("Incorrect password. Please try again.")
                         }
                     } else {
                         workInProgressEnd()
-                        showToast("No such document found.")
+                        showToast.errorToast("No such document found.")
                         sendToSignIn()
                     }
                 }
                 .addOnFailureListener { e ->
                     workInProgressEnd()
-                    showToast("Error fetching document")
+                    showToast.errorToast("Error fetching document")
                     Log.d(TAG, "checkPassword: ${e.message}")
                     sendToSignIn()
                 }
@@ -145,7 +145,7 @@ class StepTwoVerificationFragment : Fragment() {
                 }
         } else {
             workInProgressEnd()
-            showToast("User not logged in.")
+            showToast.errorToast("User not logged in.")
             sendToSignIn()
         }
     }
@@ -171,7 +171,7 @@ class StepTwoVerificationFragment : Fragment() {
                     Log.d("TAG", "User details fetched successfully: email=$email, name=$name")
                 } else {
                     Log.e("TAG", "No such document found for user $userUid")
-                    showToast("No user details found")
+                    showToast.errorToast("No user details found")
                     workInProgressEnd()
                     sendToSignIn()
                 }
@@ -179,7 +179,7 @@ class StepTwoVerificationFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 Log.e("TAG", "Error fetching user details: ${e.message}")
-                showToast("Error fetching user details: ${e.message}")
+                showToast.errorToast("Error fetching user details: ${e.message}")
                 callback()
                 workInProgressEnd()
                 sendToSignIn()
@@ -217,7 +217,10 @@ class StepTwoVerificationFragment : Fragment() {
         if (navController.currentDestination?.id == R.id.stepTwoVerificationFragment) {
             navController.navigate(R.id.action_stepTwoVerificationFragment_to_signInFragment)
         } else {
-            Log.e("NavigationDebug", "Attempted navigation from wrong fragment: ${navController.currentDestination?.label}")
+            Log.e(
+                "NavigationDebug",
+                "Attempted navigation from wrong fragment: ${navController.currentDestination?.label}"
+            )
         }
     }
 }

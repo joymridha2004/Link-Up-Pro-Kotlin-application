@@ -36,7 +36,7 @@ class HomeFragment : Fragment() {
         fStore = FirebaseFirestore.getInstance()
         // Update all details in SharedPreferences
         fetchUserDetailsThenUpdate {}
-        binding.homeFragmentTV.text ="Home Fragment"
+        binding.homeFragmentTV.text = "Home Fragment"
 
         binding.HomeFragmentLogoutButton.setOnClickListener {
             mAuth.signOut()

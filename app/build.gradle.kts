@@ -67,7 +67,12 @@ dependencies {
     // Country Code Picker
     implementation("com.hbb20:ccp:2.7.3")
 
+    //SMTP
     implementation("com.sun.mail:android-mail:1.6.5")
     implementation("com.sun.mail:android-activation:1.6.5")
+
+    //Toast
+    implementation("io.github.shashank02051997:FancyToast:2.0.2")
+    implementation("com.github.Spikeysanju:MotionToast:1.4")
 
 }
