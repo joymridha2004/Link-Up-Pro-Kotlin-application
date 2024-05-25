@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import android.widget.CompoundButton
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -311,4 +312,21 @@ class SignUpFragment : Fragment() {
             )
         findNavController().navigate(direction)
     }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            val navController = findNavController()
+            val currentDestination = navController.currentDestination?.id
+            if (currentDestination == R.id.signUpFragment) {
+                // Handle back press action
+                findNavController().navigate(R.id.action_signUpFragment_to_signInFragment)
+            } else {
+                // Call the super method to allow normal back press behavior
+                isEnabled = false
+                requireActivity().onBackPressed()
+            }
+        }
+    }
+
 }

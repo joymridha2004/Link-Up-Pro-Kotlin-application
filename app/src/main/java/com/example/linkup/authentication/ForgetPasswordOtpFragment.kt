@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.linkup.R
@@ -133,6 +134,22 @@ class ForgetPasswordOtpFragment : Fragment() {
         binding.forgetPasswordOtpFragmentVerifyButton.visibility = View.INVISIBLE
         binding.forgetPasswordOtpFragmentPB.visibility = View.VISIBLE
         binding.resendOTPTV.isEnabled = false
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            val navController = findNavController()
+            val currentDestination = navController.currentDestination?.id
+            if (currentDestination == R.id.forgetPasswordOtpFragment) {
+                // Handle back press action
+                findNavController().navigate(R.id.action_forgetPasswordOtpFragment_to_signInFragment)
+            } else {
+                // Call the super method to allow normal back press behavior
+                isEnabled = false
+                requireActivity().onBackPressed()
+            }
+        }
     }
 
 }

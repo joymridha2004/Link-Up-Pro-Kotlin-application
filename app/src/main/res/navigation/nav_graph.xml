@@ -60,6 +60,7 @@
         <action
             android:id="@+id/action_signInOtpFragment_to_signInFragment"
             app:destination="@id/signInFragment"
+            app:launchSingleTop="true"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -181,6 +182,11 @@
             android:id="@+id/action_forgetPasswordOtpFragment_to_forgetPasswordFragment"
             app:destination="@id/forgetPasswordFragment"
             app:popUpTo="@id/forgetPasswordOtpFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_forgetPasswordOtpFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment

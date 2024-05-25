@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -122,7 +123,7 @@ class StepTwoVerificationFragment : Fragment() {
                         val storedPassword = document.getString("userPassword")
                         if (storedPassword == password) {
                             workInProgressEnd()
-                            showToast.motionSuccessToast("Success","Login successful")
+                            showToast.motionSuccessToast("Success", "Login successful")
                             sendToHome()
                         } else {
                             workInProgressEnd()
@@ -223,4 +224,21 @@ class StepTwoVerificationFragment : Fragment() {
             )
         }
     }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            val navController = findNavController()
+            val currentDestination = navController.currentDestination?.id
+            if (currentDestination == R.id.stepTwoVerificationFragment) {
+                // Handle back press action
+                findNavController().navigate(R.id.action_stepTwoVerificationFragment_to_signInFragment)
+            } else {
+                // Call the super method to allow normal back press behavior
+                isEnabled = false
+                requireActivity().onBackPressed()
+            }
+        }
+    }
+
 }
