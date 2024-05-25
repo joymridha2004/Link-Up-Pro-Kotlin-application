@@ -1,5 +1,6 @@
 package com.example.linkup.authentication
 
+import ShowToast
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,7 @@ class HomeFragment : Fragment() {
     private val args: HomeFragmentArgs by navArgs()
     private lateinit var mAuth: FirebaseAuth
     private lateinit var fStore: FirebaseFirestore
+    private lateinit var showToast: ShowToast
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,13 +36,18 @@ class HomeFragment : Fragment() {
         // Initialize Firebase and other services
         mAuth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
+        // Initialize ShowToast
+        showToast = ShowToast(requireContext())
         // Update all details in SharedPreferences
-        fetchUserDetailsThenUpdate {}
+        if (mAuth.uid.toString() != SplashFragment.getUserUid(requireContext())) {
+            fetchUserDetailsThenUpdate {}
+        }
         binding.homeFragmentTV.text = "Home Fragment"
 
         binding.HomeFragmentLogoutButton.setOnClickListener {
-            mAuth.signOut()
-            sendToSignIn()
+//            mAuth.signOut()
+//            sendToSignIn()
+            showToast.motionWarningToast("Warning", "Currently logout feature not available yet!")
         }
 
         return binding.root
@@ -49,10 +56,6 @@ class HomeFragment : Fragment() {
     private fun sendToSignIn() {
         SplashFragment.setLoginStatus(requireContext(), false)
         findNavController().navigate(R.id.action_homeFragment_to_signInFragment)
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun fetchUserDetailsThenUpdate(callback: () -> Unit) {
@@ -82,13 +85,13 @@ class HomeFragment : Fragment() {
                     Log.d("TAG", "User details fetched successfully")
                 } else {
                     Log.e("TAG", "No such document found for user $userUid")
-                    showToast("No user details found")
+                    showToast.errorToast("No user details found")
                 }
                 callback()
             }
             .addOnFailureListener { e ->
                 Log.e("TAG", "Error fetching user details: ${e.message}")
-                showToast("Error fetching user details")
+                showToast.errorToast("Error fetching user details")
                 callback()
             }
     }

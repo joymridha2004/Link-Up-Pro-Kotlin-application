@@ -2,7 +2,9 @@ package com.example.linkup.authentication
 
 import ShowToast
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.util.Base64
 import android.graphics.drawable.Drawable
@@ -17,7 +19,9 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
+import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -28,6 +32,7 @@ import com.example.linkup.databinding.FragmentSignUpBinding
 import com.example.linkup.utility.SendEmail
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.ByteArrayOutputStream
@@ -62,11 +67,15 @@ class SignUpFragment : Fragment() {
     //Vibration component
     private lateinit var vibrator: Vibrator
 
+    //Metarial
+    private lateinit var materialAlertDialogBuilder: MaterialAlertDialogBuilder
+
     //Layout functionality variable
     private var allDetailsAreOk: Boolean = false
     private var nameIsEmpty: Boolean = true
     private var emailIsEmpty: Boolean = true
     private var dobIsEmpty: Boolean = true
+    private var termsAccepted: Boolean = false
 
     private var name: String? = null
     private var email: String? = null
@@ -106,6 +115,7 @@ class SignUpFragment : Fragment() {
         blackColor = ContextCompat.getColor(requireActivity(), R.color.black)
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
+        materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
 
         // Fetch user name from the EditText
         binding.signUpFragmentNameET.addTextChangedListener(object : TextWatcher {
@@ -153,17 +163,39 @@ class SignUpFragment : Fragment() {
             dob = binding.signUpFragmentDOBTV.text.toString()
         }
 
+        binding.signUpPageTermsAndConditionsCB.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                materialAlertDialogBuilder.setTitle(R.string.terms_and_conditions)
+                materialAlertDialogBuilder.setMessage(R.string.terms_and_conditions_content)
+                materialAlertDialogBuilder.setPositiveButton("Accept") { dialogInterface, which ->
+                    termsAccepted = true
+                    binding.signUpPageTermsAndConditionsCB.isChecked = true
+                    dialogInterface.dismiss()
+                }
+                materialAlertDialogBuilder.setNegativeButton("Decline") { dialogInterface, which ->
+                    termsAccepted = false
+                    binding.signUpPageTermsAndConditionsCB.isChecked = false
+                    dialogInterface.dismiss()
+                }
+                materialAlertDialogBuilder.show()
+            }
+        }
+
         // Handle action on sign up button
         binding.signUpFragmentNextBT.setOnClickListener {
             vibrator.vibrate(100)
             checkAllDetails()
             findWhereIsEmpty()
             allDetailsUpdated()
-            if (allDetailsAreOk) {
+            if (allDetailsAreOk && termsAccepted) {
                 workInProgressStart()
                 verificationCode = sendEmail.sendEmailOtp(email.toString(), name.toString())
                 workInProgressEnd()
                 sendToSignUpOtp()
+            } else if (!termsAccepted && allDetailsAreOk) {
+                showToast.warningToast("You must accept the terms and conditions to proceed!")
+            } else {
+                showToast.infoToast("Fill up all details!")
             }
         }
 
@@ -247,8 +279,8 @@ class SignUpFragment : Fragment() {
             binding.signUpFragmentDOBTV.setHintTextColor(redColor)
             binding.signUpFragmentDOBTV.setTextColor(redColor)
         }
-        if (!allDetailsAreOk) {
-            showToast.infoToast("Fill up all details!")
+        if (!termsAccepted) {
+            binding.signUpPageTermsAndConditionsCB.isChecked = false
         }
     }
 
@@ -279,5 +311,4 @@ class SignUpFragment : Fragment() {
             )
         findNavController().navigate(direction)
     }
-
 }
