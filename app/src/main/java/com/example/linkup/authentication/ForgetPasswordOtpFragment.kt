@@ -42,6 +42,7 @@ class ForgetPasswordOtpFragment : Fragment() {
 
     private var sendEmail = SendEmail()
     private lateinit var showToast: ShowToast
+    private var internetStatus: Boolean? = null
     private var firstTimeCheck: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,34 +62,45 @@ class ForgetPasswordOtpFragment : Fragment() {
         showToast = ShowToast(requireContext())
 
         // Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+        observeNetworkStatus(
+            requireContext(),
+            viewLifecycleOwner.lifecycleScope
+        ) { title, message, isSuccess ->
             if (isSuccess) {
-                if (firstTimeCheck){
+                if (firstTimeCheck) {
                     showToast.motionSuccessToast(title, message)
                 }
+                internetStatus = true
             } else {
                 showToast.motionWarningToast(title, message)
                 firstTimeCheck = true
+                internetStatus = false
             }
         }
+
 
         //Handle action to verify button
         binding.forgetPasswordOtpFragmentVerifyButton.setOnClickListener {
             vibrator.vibrate(100)
-            //Fetch otp form user
-            typeCode = binding.forgetPasswordOtpFragmentOtpET.text.toString()
-            if (typeCode!!.length == 6) {
-                if (typeCode == verificationCode) {
-                    workinProgressStart()
-                    showToast.successToast("Verify successful")
-                    sendToForgetPassword()
-                    workInProgressEnd()
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                //Fetch otp form user
+                typeCode = binding.forgetPasswordOtpFragmentOtpET.text.toString()
+                if (typeCode!!.length == 6) {
+                    if (typeCode == verificationCode) {
+                        workinProgressStart()
+                        showToast.successToast("Verify successful")
+                        sendToForgetPassword()
+                        workInProgressEnd()
+                    } else {
+                        showToast.errorToast("Wrong password!")
+                    }
                 } else {
-                    showToast.errorToast("Wrong password!")
+                    showToast.infoToast("Please enter a 6-digit OTP.")
                 }
-            } else {
-                showToast.infoToast("Please enter a 6-digit OTP.")
             }
+
 
         }
 

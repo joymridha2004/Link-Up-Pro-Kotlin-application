@@ -41,6 +41,7 @@ class SignInFragment : Fragment() {
     private lateinit var vibrator: Vibrator
     private lateinit var showToast: ShowToast
     private var firstTimeCheck: Boolean = false
+    private var internetStatus: Boolean? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,14 +61,19 @@ class SignInFragment : Fragment() {
         showToast = ShowToast(requireContext())
 
         // Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+        observeNetworkStatus(
+            requireContext(),
+            viewLifecycleOwner.lifecycleScope
+        ) { title, message, isSuccess ->
             if (isSuccess) {
-                if (firstTimeCheck){
+                if (firstTimeCheck) {
                     showToast.motionSuccessToast(title, message)
                 }
+                internetStatus = true
             } else {
                 showToast.motionWarningToast(title, message)
                 firstTimeCheck = true
+                internetStatus = false
             }
         }
 
@@ -93,21 +99,25 @@ class SignInFragment : Fragment() {
             vibrator.vibrate(100)
             phoneNumber = "+" + binding.signInFragmentCCP.fullNumber
             binding.signInFragmentPhoneNoET.clearFocus()
-            if (!phoneIsEmpty) {
-                //Disable all element
-                workInProgressStart()
-                //Firebase authentication process start
-                initiatePhoneNumberVerification()
+            if (!internetStatus!!) {
+                showToast.motionWarningToast("Warning", "You are currently offline")
             } else {
-                showToast.infoToast("Please enter a valid number")
+                if (!phoneIsEmpty) {
+                    //Disable all element
+                    workInProgressStart()
+                    //Firebase authentication process start
+                    initiatePhoneNumberVerification()
+                } else {
+                    showToast.infoToast("Please enter a valid number")
+                }
             }
+
         }
         return binding.root
     }
 
     //Elements enable and disable function
     private fun workInProgressStart() {
-        binding.signInFragmentCCP.isEnabled = false
         binding.signInFragmentCCP.isEnabled = false
         binding.signInFragmentPhoneNoET.isEnabled = false
         binding.signInFragmentLoginBT.isEnabled = false
@@ -117,11 +127,10 @@ class SignInFragment : Fragment() {
 
     private fun workInProgressEnd() {
         binding.signInFragmentCCP.isEnabled = true
-        binding.signInFragmentCCP.isEnabled = true
         binding.signInFragmentPhoneNoET.isEnabled = true
         binding.signInFragmentLoginBT.isEnabled = true
         binding.signInFragmentLoginBT.visibility = View.VISIBLE
-        binding.signInFragmentPB.visibility = View.INVISIBLE
+        binding.signInFragmentPB.visibility = View.GONE
     }
 
     //Firebase authentication configuration and code send function
@@ -141,14 +150,18 @@ class SignInFragment : Fragment() {
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
-            when (e) {
-                is FirebaseAuthInvalidCredentialsException -> showToast.errorToast("Invalid phone number")
-                is FirebaseTooManyRequestsException -> showToast.errorToast("all OTP for this number have use today")
-                else -> showToast.errorToast("Verification failed")
+            if (internetStatus!!){
+                when (e) {
+                    is FirebaseAuthInvalidCredentialsException -> showToast.errorToast("Invalid phone number")
+                    is FirebaseTooManyRequestsException -> showToast.errorToast("all OTP for this number have use today")
+                    else -> showToast.errorToast("Verification failed")
+                }
+                Log.d(TAG, "onVerificationFailed: ${e.message}")
+                workInProgressEnd()
+                SplashFragment.setLoginStatus(requireContext(), false)
+            }else{
+                showToast.motionWarningToast("Warning", "You are currently offline")
             }
-            Log.d(TAG, "onVerificationFailed: ${e.message}")
-            workInProgressEnd()
-            SplashFragment.setLoginStatus(requireContext(), false)
         }
 
         override fun onCodeSent(

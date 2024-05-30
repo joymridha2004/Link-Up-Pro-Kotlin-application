@@ -40,6 +40,7 @@ class StepTwoVerificationFragment : Fragment() {
 
     private val sendEmail = SendEmail()
     private lateinit var showToast: ShowToast
+    private var internetStatus: Boolean? = null
     private var firstTimeCheck: Boolean = false
 
     override fun onCreateView(
@@ -58,17 +59,21 @@ class StepTwoVerificationFragment : Fragment() {
         showToast = ShowToast(requireContext())
 
         // Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+        observeNetworkStatus(
+            requireContext(),
+            viewLifecycleOwner.lifecycleScope
+        ) { title, message, isSuccess ->
             if (isSuccess) {
-                if (firstTimeCheck){
+                if (firstTimeCheck) {
                     showToast.motionSuccessToast(title, message)
                 }
+                internetStatus = true
             } else {
                 showToast.motionWarningToast(title, message)
                 firstTimeCheck = true
+                internetStatus = false
             }
         }
-
 
         // Setup listeners and initializations
         binding.step2VerificationFragmentPasswordTIET.addTextChangedListener(createTextWatcher { s ->
@@ -77,12 +82,20 @@ class StepTwoVerificationFragment : Fragment() {
 
         binding.step2VerificationFragmentVerifyBT.setOnClickListener {
             vibrator.vibrate(100)
-            handlePasswordVerification()
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                handlePasswordVerification()
+            }
         }
 
         binding.step2VerificationFragmentForgetTV.setOnClickListener {
-            vibrator.vibrate(100)
-            handleForgetPassword()
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                vibrator.vibrate(100)
+                handleForgetPassword()
+            }
         }
 
         return binding.root
@@ -146,23 +159,36 @@ class StepTwoVerificationFragment : Fragment() {
                         }
                     } else {
                         workInProgressEnd()
-                        showToast.errorToast("No such document found.")
-                        sendToSignIn()
+                        if (!internetStatus!!){
+                            showToast.motionWarningToast("Warning", "You are currently offline")
+                        }else{
+                            showToast.errorToast("No such document found.")
+                            sendToSignIn()
+                        }
+
                     }
                 }
                 .addOnFailureListener { e ->
                     workInProgressEnd()
-                    showToast.errorToast("Error fetching document")
-                    Log.d(TAG, "checkPassword: ${e.message}")
-                    sendToSignIn()
+                    if (!internetStatus!!){
+                        showToast.motionWarningToast("Warning", "You are currently offline")
+                    }else{
+                        showToast.errorToast("Error fetching document")
+                        Log.d(TAG, "checkPassword: ${e.message}")
+                        sendToSignIn()
+                    }
                 }
                 .addOnCompleteListener {
                     workInProgressEnd()
                 }
         } else {
             workInProgressEnd()
-            showToast.errorToast("User not logged in.")
-            sendToSignIn()
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                showToast.errorToast("User not logged in.")
+                sendToSignIn()
+            }
         }
     }
 
@@ -186,19 +212,27 @@ class StepTwoVerificationFragment : Fragment() {
                     name = documentSnapshot.getString("userName")
                     Log.d("TAG", "User details fetched successfully: email=$email, name=$name")
                 } else {
-                    Log.e("TAG", "No such document found for user $userUid")
-                    showToast.errorToast("No user details found")
                     workInProgressEnd()
-                    sendToSignIn()
+                    if (!internetStatus!!){
+                        showToast.motionWarningToast("Warning", "You are currently offline")
+                    }else{
+                        Log.e("TAG", "No such document found for user $userUid")
+                        showToast.errorToast("No user details found")
+                        sendToSignIn()
+                    }
                 }
                 callback()
             }
             .addOnFailureListener { e ->
-                Log.e("TAG", "Error fetching user details: ${e.message}")
-                showToast.errorToast("Error fetching user details: ${e.message}")
-                callback()
                 workInProgressEnd()
-                sendToSignIn()
+                if (!internetStatus!!){
+                    showToast.motionWarningToast("Warning", "You are currently offline")
+                }else{
+                    Log.e("TAG", "Error fetching user details: ${e.message}")
+                    showToast.errorToast("Error fetching user details: ${e.message}")
+                    callback()
+                    sendToSignIn()
+                }
             }
     }
 

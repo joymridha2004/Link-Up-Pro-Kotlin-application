@@ -67,6 +67,7 @@ class SignUpFragment : Fragment() {
     private var firstTimeCheck: Boolean = false
 
     private lateinit var showToast: ShowToast
+    private var internetStatus: Boolean? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -95,14 +96,19 @@ class SignUpFragment : Fragment() {
         materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
 
         // Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+        observeNetworkStatus(
+            requireContext(),
+            viewLifecycleOwner.lifecycleScope
+        ) { title, message, isSuccess ->
             if (isSuccess) {
-                if (firstTimeCheck){
+                if (firstTimeCheck) {
                     showToast.motionSuccessToast(title, message)
                 }
+                internetStatus = true
             } else {
                 showToast.motionWarningToast(title, message)
                 firstTimeCheck = true
+                internetStatus = false
             }
         }
 
@@ -176,15 +182,19 @@ class SignUpFragment : Fragment() {
             checkAllDetails()
             findWhereIsEmpty()
             allDetailsUpdated()
-            if (allDetailsAreOk && termsAccepted) {
-                workInProgressStart()
-                verificationCode = sendEmail.sendEmailOtp(email.toString(), name.toString())
-                workInProgressEnd()
-                sendToSignUpOtp()
-            } else if (!termsAccepted && allDetailsAreOk) {
-                showToast.warningToast("You must accept the terms and conditions to proceed!")
-            } else {
-                showToast.infoToast("Fill up all details!")
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                if (allDetailsAreOk && termsAccepted) {
+                    workInProgressStart()
+                    verificationCode = sendEmail.sendEmailOtp(email.toString(), name.toString())
+                    workInProgressEnd()
+                    sendToSignUpOtp()
+                } else if (!termsAccepted && allDetailsAreOk) {
+                    showToast.warningToast("You must accept the terms and conditions to proceed!")
+                } else {
+                    showToast.infoToast("Fill up all details!")
+                }
             }
         }
 

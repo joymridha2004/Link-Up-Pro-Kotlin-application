@@ -45,9 +45,9 @@ class HomeFragment : Fragment() {
         binding.homeFragmentTV.text = "Home Fragment"
 
         binding.HomeFragmentLogoutButton.setOnClickListener {
-            // mAuth.signOut()
-            // sendToSignIn()
-            showToast.motionWarningToast("Warning", "Currently logout feature not available yet!")
+             mAuth.signOut()
+             sendToSignIn()
+//            showToast.motionWarningToast("Warning", "Currently logout feature not available yet!")
         }
 
         // Observe network connectivity status

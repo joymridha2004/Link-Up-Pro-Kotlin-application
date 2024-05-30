@@ -46,6 +46,7 @@ class ForgetPasswordFragment : Fragment() {
     private val sendEmail = SendEmail()
     private lateinit var showToast: ShowToast
     private var firstTimeCheck: Boolean = false
+    private var internetStatus: Boolean? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,16 +65,22 @@ class ForgetPasswordFragment : Fragment() {
         showToast = ShowToast(requireContext())
 
         // Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+        observeNetworkStatus(
+            requireContext(),
+            viewLifecycleOwner.lifecycleScope
+        ) { title, message, isSuccess ->
             if (isSuccess) {
-                if (firstTimeCheck){
+                if (firstTimeCheck) {
                     showToast.motionSuccessToast(title, message)
                 }
+                internetStatus = true
             } else {
                 showToast.motionWarningToast(title, message)
                 firstTimeCheck = true
+                internetStatus = false
             }
         }
+
 
         //fetch new password
         binding.ForgetPasswordFragmentNewPasswordTIET.addTextChangedListener(object : TextWatcher {
@@ -112,16 +119,21 @@ class ForgetPasswordFragment : Fragment() {
         //Handle action to verify Button
         binding.ForgetPasswordFragmentNextBT.setOnClickListener {
             vibrator.vibrate(100)
-            if (newPassword == newConfirmPassword) {
-                if (newPassword!!.length > 6) {
-                    workInProgressStart()
-                    updatePassword()
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                if (newPassword == newConfirmPassword) {
+                    if (newPassword!!.length > 6) {
+                        workInProgressStart()
+                        updatePassword()
+                    } else {
+                        showToast.warningToast("Minimum password contain 6 character")
+                    }
                 } else {
-                    showToast.warningToast("Minimum password contain 6 character")
+                    showToast.warningToast("Password mismatch")
                 }
-            } else {
-                showToast.warningToast("Password mismatch")
             }
+
         }
         return binding.root
     }
@@ -160,20 +172,29 @@ class ForgetPasswordFragment : Fragment() {
                         }
                         .addOnFailureListener { e ->
                             workInProgressEnd()
-                            Log.e(
-                                "TAG",
-                                "Failed to update password for user $userUid: ${e.message}"
-                            )
-                            showToast.errorToast(e.message.toString())
-                            sendToSignIn()
+                            if (!internetStatus!!){
+                                showToast.motionWarningToast("Warning", "You are currently offline")
+                            }else{
+                                Log.e(
+                                    "TAG",
+                                    "Failed to update password for user $userUid: ${e.message}"
+                                )
+                                showToast.errorToast(e.message.toString())
+                                sendToSignIn()
+                            }
+
                         }
                 }
             }
         }.addOnFailureListener { e ->
             workInProgressEnd()
-            Log.e("TAG", "Error fetching user data: ${e.message}")
-            showToast.errorToast(e.message.toString())
-            sendToSignIn()
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                Log.e("TAG", "Error fetching user data: ${e.message}")
+                showToast.errorToast(e.message.toString())
+                sendToSignIn()
+            }
         }
     }
 

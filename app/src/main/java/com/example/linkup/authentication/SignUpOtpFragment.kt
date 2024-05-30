@@ -59,6 +59,7 @@ class SignUpOtpFragment : Fragment() {
 
     private val sendEmail = SendEmail()
     private lateinit var showToast: ShowToast
+    private var internetStatus: Boolean? = null
     private var firstTimeCheck: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,53 +82,57 @@ class SignUpOtpFragment : Fragment() {
         showToast = ShowToast(requireContext())
 
         // Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+        observeNetworkStatus(
+            requireContext(),
+            viewLifecycleOwner.lifecycleScope
+        ) { title, message, isSuccess ->
             if (isSuccess) {
-                if (firstTimeCheck){
+                if (firstTimeCheck) {
                     showToast.motionSuccessToast(title, message)
                 }
+                internetStatus = true
             } else {
                 showToast.motionWarningToast(title, message)
                 firstTimeCheck = true
-            }
-        }// Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
-            if (isSuccess) {
-                if (firstTimeCheck){
-                    showToast.motionSuccessToast(title, message)
-                }
-            } else {
-                showToast.motionWarningToast(title, message)
-                firstTimeCheck = true
+                internetStatus = false
             }
         }
 
         //Handle action to verify button
         binding.signUpOTPFragmentVerifyBT.setOnClickListener {
             vibrator.vibrate(100)
-            typeCode = binding.signUpOTPFragmentOtpET.text.toString()
-            if (typeCode!!.length == 6) {
-                if (typeCode == verificationCode) {
-                    workInProgressStart()
-                    updateUserData()
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                typeCode = binding.signUpOTPFragmentOtpET.text.toString()
+                if (typeCode!!.length == 6) {
+                    if (typeCode == verificationCode) {
+                        workInProgressStart()
+                        updateUserData()
+                    } else {
+                        showToast.errorToast("Wrong OTP!")
+                    }
                 } else {
-                    showToast.errorToast("Wrong OTP!")
+                    showToast.infoToast("Please enter a 6-digit OTP.")
                 }
-            } else {
-                showToast.infoToast("Please enter a 6-digit OTP.")
             }
+
         }
 
         //Handle action to resend otp button
         binding.resendOTPTV.setOnClickListener {
             vibrator.vibrate(100)
-            if (!resendOtpProcess) {
-                workInProgressStart()
-                verificationCode = sendEmail.sendEmailOtp(args.email, args.name)
-                workInProgressEnd()
-                resendOTPTvVisibility()
-            } else {
-                showToast.infoToast("Email already send")
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                if (!resendOtpProcess) {
+                    workInProgressStart()
+                    verificationCode = sendEmail.sendEmailOtp(args.email, args.name)
+                    workInProgressEnd()
+                    resendOTPTvVisibility()
+                } else {
+                    showToast.infoToast("Email already send")
+                }
             }
         }
 
@@ -201,9 +206,13 @@ class SignUpOtpFragment : Fragment() {
                 sendToHome()
             }).addOnFailureListener(OnFailureListener { e ->
                 workInProgressEnd()
-                showToast.errorToast("Internal error!")
-                Log.d(TAG, "updateUserData: ${e.message}")
-                sendToSignIn()
+                if (internetStatus!!){
+                    showToast.errorToast("Internal error!")
+                    Log.d(TAG, "updateUserData: ${e.message}")
+                    sendToSignIn()
+                }else{
+                    showToast.motionWarningToast("Warning", "You are currently offline")
+                }
             })
     }
 

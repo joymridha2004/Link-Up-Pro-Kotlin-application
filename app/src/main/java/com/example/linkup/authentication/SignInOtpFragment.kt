@@ -54,6 +54,7 @@ class SignInOtpFragment : Fragment() {
     private var twoStepVerification: Boolean? = null
     private lateinit var showToast: ShowToast
     private var firstTimeCheck: Boolean = false
+    private var internetStatus: Boolean? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,14 +74,19 @@ class SignInOtpFragment : Fragment() {
         showToast = ShowToast(requireContext())
 
         // Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+        observeNetworkStatus(
+            requireContext(),
+            viewLifecycleOwner.lifecycleScope
+        ) { title, message, isSuccess ->
             if (isSuccess) {
-                if (firstTimeCheck){
+                if (firstTimeCheck) {
                     showToast.motionSuccessToast(title, message)
                 }
+                internetStatus = true
             } else {
                 showToast.motionWarningToast(title, message)
                 firstTimeCheck = true
+                internetStatus = false
             }
         }
 
@@ -89,27 +95,35 @@ class SignInOtpFragment : Fragment() {
             vibrator.vibrate(100)
             //Fetch otp from user
             val typeOTP = binding.signInOTPFragmentOtpET.text
-            if (typeOTP.length == 6) {
-                //Disable all element
-                workInProgressStart()
-                val credential = PhoneAuthProvider.getCredential(args.otp, typeOTP.toString())
-                signInWithPhoneAuthCredential(credential)
-            } else {
-                showToast.infoToast("Please enter a 6-digit OTP.")
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                if (typeOTP.length == 6) {
+                    //Disable all element
+                    workInProgressStart()
+                    val credential = PhoneAuthProvider.getCredential(args.otp, typeOTP.toString())
+                    signInWithPhoneAuthCredential(credential)
+                } else {
+                    showToast.infoToast("Please enter a 6-digit OTP.")
+                }
             }
         }
 
         //Handle action to resend otp
         binding.resendOTPTV.setOnClickListener {
             vibrator.vibrate(100)
-            if (!resendOtpProcess) {
-                //Disable all element
-                workInProgressStart()
-                //Resend otp
-                resendVerificationCode()
-                resendOTPTvVisibility()
-            } else {
-                showToast.infoToast("Otp already send")
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{
+                if (!resendOtpProcess) {
+                    //Disable all element
+                    workInProgressStart()
+                    //Resend otp
+                    resendVerificationCode()
+                    resendOTPTvVisibility()
+                } else {
+                    showToast.infoToast("Otp already send")
+                }
             }
         }
         return binding.root
@@ -219,17 +233,23 @@ class SignInOtpFragment : Fragment() {
                         return@addOnCompleteListener
                     }
                 } else {
-                    showToast.errorToast("Error fetching user data!")
-                    Log.d("TAG", "Task is unsuccessful: ${task.exception.toString()}")
                     workInProgressEnd()
-                    sendToSignIn()
+                    if (!internetStatus!!){
+                        showToast.motionWarningToast("Warning", "You are currently offline")
+                    }else{ showToast.errorToast("Error fetching user data!")
+                        Log.d("TAG", "Task is unsuccessful: ${task.exception.toString()}")
+                        sendToSignIn()
+                    }
                 }
             }
         } else {
-            showToast.errorToast("Internal error!")
-            Log.d("TAG", "UserUid is null")
             workInProgressEnd()
-            sendToSignIn()
+            if (!internetStatus!!){
+                showToast.motionWarningToast("Warning", "You are currently offline")
+            }else{showToast.errorToast("Internal error!")
+                Log.d("TAG", "UserUid is null")
+                sendToSignIn()
+            }
         }
     }
 
