@@ -39,21 +39,22 @@ class HomeFragment : Fragment() {
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
         // Update all details in SharedPreferences
-        if (mAuth.uid.toString() != SplashFragment.getUserUid(requireContext())) {
-            fetchUserDetailsThenUpdate {}
-        }
+        fetchUserDetailsThenUpdate {}
+
         binding.homeFragmentTV.text = "Home Fragment"
 
         binding.HomeFragmentLogoutButton.setOnClickListener {
-             mAuth.signOut()
-             sendToSignIn()
-//            showToast.motionWarningToast("Warning", "Currently logout feature not available yet!")
+            mAuth.signOut()
+            sendToSignIn()
         }
 
         // Observe network connectivity status
-        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+        observeNetworkStatus(
+            requireContext(),
+            viewLifecycleOwner.lifecycleScope
+        ) { title, message, isSuccess ->
             if (isSuccess) {
-                if (firstTimeCheck){
+                if (firstTimeCheck) {
                     showToast.motionSuccessToast(title, message)
                 }
             } else {

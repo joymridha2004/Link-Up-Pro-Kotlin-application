@@ -29,11 +29,13 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 class SignUpOtpFragment : Fragment() {
     //Binding to xml layout
@@ -47,6 +49,8 @@ class SignUpOtpFragment : Fragment() {
 
     //Firebase database
     private lateinit var fStore: FirebaseFirestore
+
+    private lateinit var fStorage: FirebaseStorage
 
     //Vibration component
     private lateinit var vibrator: Vibrator
@@ -70,6 +74,7 @@ class SignUpOtpFragment : Fragment() {
         //Firebase instance create
         mAuth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
+        fStorage = FirebaseStorage.getInstance()
         //Fetch and show email form TV
         binding.signUpOTPFragmentEmailTV.text = args.email
         //Fetch otp form user
@@ -101,30 +106,41 @@ class SignUpOtpFragment : Fragment() {
         //Handle action to verify button
         binding.signUpOTPFragmentVerifyBT.setOnClickListener {
             vibrator.vibrate(100)
-            if (!internetStatus!!){
+            if (internetStatus == null || !internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 typeCode = binding.signUpOTPFragmentOtpET.text.toString()
                 if (typeCode!!.length == 6) {
                     if (typeCode == verificationCode) {
                         workInProgressStart()
-                        updateUserData()
+                        val resourceId: Int = R.drawable.user_profile_icon
+                        val uri: Uri = resourceIdToUri(requireActivity(), resourceId)
+                        if (uri != null) {
+                            uploadImage(uri, { imageUrl ->
+                                updateUserData(imageUrl.toString())
+                            }, { e ->
+                                workInProgressEnd()
+                                showToast.motionErrorToast("Failed to upload image","${e.message}")
+                            })
+                        } else {
+                            updateUserData("")  // Handle case where URI is null
+                        }
                     } else {
                         showToast.errorToast("Wrong OTP!")
                     }
                 } else {
-                    showToast.infoToast("Please enter a 6-digit OTP.")
+                    showToast.warningToast("Please enter a 6-digit OTP.")
                 }
             }
-
         }
+
 
         //Handle action to resend otp button
         binding.resendOTPTV.setOnClickListener {
             vibrator.vibrate(100)
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 if (!resendOtpProcess) {
                     workInProgressStart()
                     verificationCode = sendEmail.sendCreateAccountEmailOtp(args.email, args.name)
@@ -169,34 +185,17 @@ class SignUpOtpFragment : Fragment() {
     }
 
     //Update user data from firebase
-    private fun updateUserData() {
-        val resourceId: Int = R.drawable.user_profile_icon
-        val uri: Uri = resourceIdToUri(requireActivity(), resourceId)
+    private fun updateUserData(imageUrl: String) {
         val usersDetails: MutableMap<String, Any> = HashMap()
         usersDetails["userName"] = args.name
-        if (uri != null) {
-            var bitmap: Bitmap? = null
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(
-                    requireActivity().contentResolver,
-                    uri
-                )
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            if (bitmap != null) {
-                val avatarBase64: String = convertBitmapToBase64ToUpdate(bitmap)!!
-                if (avatarBase64 != null) {
-                    usersDetails["userPhoto"] = avatarBase64
-                }
-            }
-        }
+        usersDetails["userPhoto"] = imageUrl
         usersDetails["accountCreatedTimeAndDate"] = getTimeAndDate()
         usersDetails["userPhoneNumber"] = args.phoneNumber.toString()
         usersDetails["userEmailId"] = args.email.toString()
         usersDetails["userDOB"] = args.dob.toString()
         usersDetails["userPassword"] = password.toString()
         usersDetails["twoStepVerification"] = false
+
         fStore.collection("usersDetails").document(args.userUid.toString())
             .set(usersDetails)
             .addOnCompleteListener(OnCompleteListener<Void?> {
@@ -206,24 +205,18 @@ class SignUpOtpFragment : Fragment() {
                 sendToHome()
             }).addOnFailureListener(OnFailureListener { e ->
                 workInProgressEnd()
-                if (internetStatus!!){
-                    showToast.errorToast("Internal error!")
+                if (internetStatus!!) {
+                    showToast.motionErrorToast("Error status","Internal error!")
                     Log.d(TAG, "updateUserData: ${e.message}")
                     sendToSignIn()
-                }else{
+                } else {
                     showToast.motionWarningToast("Warning", "You are currently offline")
                 }
             })
     }
 
-    //Helping function
-    private fun convertBitmapToBase64ToUpdate(bitmap: Bitmap): String? {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
-    }
 
+    //Helping function
     private fun resourceIdToUri(context: Context, resourceId: Int): Uri {
         return Uri.parse("android.resource://" + context.packageName + "/" + resourceId)
     }
@@ -232,6 +225,16 @@ class SignUpOtpFragment : Fragment() {
         val currentDate = SimpleDateFormat("dd - MM - yyyy", Locale.getDefault()).format(Date())
         val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
         return "$currentDate : $currentTime"
+    }
+
+    fun uploadImage(uri: Uri, onSuccess: (Uri) -> Unit, onFailure: (Exception) -> Unit) {
+        val storageRef = fStorage.reference
+        val imageRef = storageRef.child("profilePictures/${mAuth.currentUser?.uid}")
+        val uploadTask = imageRef.putFile(uri)
+        uploadTask.addOnSuccessListener {
+            val result = it.metadata?.reference?.downloadUrl
+            result?.addOnSuccessListener(onSuccess)
+        }.addOnFailureListener(onFailure)
     }
 
     //Coming fragment

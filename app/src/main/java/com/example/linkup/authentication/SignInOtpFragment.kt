@@ -23,7 +23,9 @@ import com.example.linkup.R
 import com.example.linkup.databinding.FragmentSignInOtpBinding
 import com.example.linkup.utils.observeNetworkStatus
 import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
@@ -95,16 +97,16 @@ class SignInOtpFragment : Fragment() {
             vibrator.vibrate(100)
             //Fetch otp from user
             val typeOTP = binding.signInOTPFragmentOtpET.text
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 if (typeOTP.length == 6) {
                     //Disable all element
                     workInProgressStart()
                     val credential = PhoneAuthProvider.getCredential(args.otp, typeOTP.toString())
                     signInWithPhoneAuthCredential(credential)
                 } else {
-                    showToast.infoToast("Please enter a 6-digit OTP.")
+                    showToast.warningToast("Please enter a 6-digit OTP.")
                 }
             }
         }
@@ -112,9 +114,9 @@ class SignInOtpFragment : Fragment() {
         //Handle action to resend otp
         binding.resendOTPTV.setOnClickListener {
             vibrator.vibrate(100)
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 if (!resendOtpProcess) {
                     //Disable all element
                     workInProgressStart()
@@ -177,7 +179,19 @@ class SignInOtpFragment : Fragment() {
         }
 
         override fun onVerificationFailed(e: FirebaseException) {
-            showToast.errorToast("Verification failed")
+            when (e) {
+                is FirebaseAuthInvalidCredentialsException -> showToast.motionErrorToast(
+                    "Error status",
+                    "Invalid phone number"
+                )
+
+                is FirebaseTooManyRequestsException -> showToast.motionErrorToast(
+                    "Error status",
+                    "all OTP for this number have use today"
+                )
+
+                else -> showToast.motionErrorToast("Error status", "Verification failed")
+            }
             Log.d(TAG, "onVerificationFailed: ${e.message}")
             workInProgressEnd()
         }
@@ -188,7 +202,7 @@ class SignInOtpFragment : Fragment() {
         ) {
             workInProgressEnd()
             resendToken = token
-            showToast.successToast("Verification code resent.")
+            showToast.motionSuccessToast("Resend status", "Verification code resend.")
         }
     }
 
@@ -197,8 +211,8 @@ class SignInOtpFragment : Fragment() {
             if (task.isSuccessful) {
                 findNextActivity()
             } else {
-                showToast.errorToast("Sign in failed:${task.exception?.message}")
-                Log.d(TAG, "signInWithPhoneAuthCredential:${task.exception?.message}")
+                showToast.motionErrorToast("Verification failed", "${task.exception?.message}")
+                Log.e(TAG, "signInWithPhoneAuthCredential: ${task.exception?.message}")
                 workInProgressEnd()
             }
         }
@@ -223,7 +237,7 @@ class SignInOtpFragment : Fragment() {
                             return@addOnCompleteListener
                         }
                         // User data exists, proceed to main activity
-                        showToast.motionSuccessToast("Success","Login successful")
+                        showToast.motionSuccessToast("Success", "Login successful")
                         workInProgressEnd()
                         sendToHome()
                     } else {
@@ -234,9 +248,10 @@ class SignInOtpFragment : Fragment() {
                     }
                 } else {
                     workInProgressEnd()
-                    if (!internetStatus!!){
+                    if (!internetStatus!!) {
                         showToast.motionWarningToast("Warning", "You are currently offline")
-                    }else{ showToast.errorToast("Error fetching user data!")
+                    } else {
+                        showToast.motionErrorToast("Error status","Error fetching user data!")
                         Log.d("TAG", "Task is unsuccessful: ${task.exception.toString()}")
                         sendToSignIn()
                     }
@@ -244,9 +259,10 @@ class SignInOtpFragment : Fragment() {
             }
         } else {
             workInProgressEnd()
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{showToast.errorToast("Internal error!")
+            } else {
+                showToast.motionErrorToast("Error status","Internal error!")
                 Log.d("TAG", "UserUid is null")
                 sendToSignIn()
             }

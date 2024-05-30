@@ -119,9 +119,9 @@ class ForgetPasswordFragment : Fragment() {
         //Handle action to verify Button
         binding.ForgetPasswordFragmentNextBT.setOnClickListener {
             vibrator.vibrate(100)
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 if (newPassword == newConfirmPassword) {
                     if (newPassword!!.length > 6) {
                         workInProgressStart()
@@ -172,14 +172,14 @@ class ForgetPasswordFragment : Fragment() {
                         }
                         .addOnFailureListener { e ->
                             workInProgressEnd()
-                            if (!internetStatus!!){
+                            if (!internetStatus!!) {
                                 showToast.motionWarningToast("Warning", "You are currently offline")
-                            }else{
+                            } else {
                                 Log.e(
                                     "TAG",
                                     "Failed to update password for user $userUid: ${e.message}"
                                 )
-                                showToast.errorToast(e.message.toString())
+                                showToast.motionErrorToast("Error status", e.message.toString())
                                 sendToSignIn()
                             }
 
@@ -188,11 +188,11 @@ class ForgetPasswordFragment : Fragment() {
             }
         }.addOnFailureListener { e ->
             workInProgressEnd()
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 Log.e("TAG", "Error fetching user data: ${e.message}")
-                showToast.errorToast(e.message.toString())
+                showToast.motionErrorToast("Error status", e.message.toString())
                 sendToSignIn()
             }
         }

@@ -108,7 +108,7 @@ class SignInFragment : Fragment() {
                     //Firebase authentication process start
                     initiatePhoneNumberVerification()
                 } else {
-                    showToast.infoToast("Please enter a valid number")
+                    showToast.warningToast("Please enter a valid number")
                 }
             }
 
@@ -152,9 +152,9 @@ class SignInFragment : Fragment() {
         override fun onVerificationFailed(e: FirebaseException) {
             if (internetStatus!!){
                 when (e) {
-                    is FirebaseAuthInvalidCredentialsException -> showToast.errorToast("Invalid phone number")
-                    is FirebaseTooManyRequestsException -> showToast.errorToast("all OTP for this number have use today")
-                    else -> showToast.errorToast("Verification failed")
+                    is FirebaseAuthInvalidCredentialsException -> showToast.motionErrorToast("Error status","Invalid phone number")
+                    is FirebaseTooManyRequestsException -> showToast.motionErrorToast("Error status","all OTP for this number have use today")
+                    else -> showToast.motionErrorToast("Error status","Verification failed")
                 }
                 Log.d(TAG, "onVerificationFailed: ${e.message}")
                 workInProgressEnd()
@@ -182,12 +182,12 @@ class SignInFragment : Fragment() {
         mAuth.signInWithCredential(credential).addOnCompleteListener(requireActivity()) { task ->
             if (task.isSuccessful) {
                 mAuth.signOut()
-                showToast.errorToast("Something wrong")
+                showToast.motionErrorToast("Verification failed","Something wrong")
                 SplashFragment.setLoginStatus(requireContext(), false)
                 workInProgressEnd()
             } else {
                 mAuth.signOut()
-                showToast.errorToast("Sign in failed: ${task.exception?.message}")
+                showToast.motionErrorToast("Verification failed","${task.exception?.message}")
                 Log.e(TAG, "signInWithPhoneAuthCredential: ${task.exception?.message}")
                 SplashFragment.setLoginStatus(requireContext(), false)
                 workInProgressEnd()

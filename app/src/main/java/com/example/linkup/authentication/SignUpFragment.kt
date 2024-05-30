@@ -193,7 +193,7 @@ class SignUpFragment : Fragment() {
                 } else if (!termsAccepted && allDetailsAreOk) {
                     showToast.warningToast("You must accept the terms and conditions to proceed!")
                 } else {
-                    showToast.infoToast("Fill up all details!")
+                    showToast.warningToast("Fill up all details!")
                 }
             }
         }

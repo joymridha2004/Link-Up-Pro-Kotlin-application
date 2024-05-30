@@ -94,7 +94,7 @@ class ForgetPasswordOtpFragment : Fragment() {
                         sendToForgetPassword()
                         workInProgressEnd()
                     } else {
-                        showToast.errorToast("Wrong password!")
+                        showToast.errorToast("Wrong OTP!")
                     }
                 } else {
                     showToast.infoToast("Please enter a 6-digit OTP.")

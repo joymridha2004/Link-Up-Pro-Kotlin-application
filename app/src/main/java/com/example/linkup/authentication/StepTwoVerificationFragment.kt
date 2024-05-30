@@ -82,17 +82,17 @@ class StepTwoVerificationFragment : Fragment() {
 
         binding.step2VerificationFragmentVerifyBT.setOnClickListener {
             vibrator.vibrate(100)
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 handlePasswordVerification()
             }
         }
 
         binding.step2VerificationFragmentForgetTV.setOnClickListener {
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 vibrator.vibrate(100)
                 handleForgetPassword()
             }
@@ -130,13 +130,13 @@ class StepTwoVerificationFragment : Fragment() {
 
     private fun handlePasswordVerification() {
         if (password.isNullOrBlank()) {
-            showToast.infoToast("Please enter password!")
+            showToast.warningToast("Please enter password!")
         } else {
             if (password!!.length >= 6) {
                 workInProgressStart()
                 checkPassword(password!!)
             } else {
-                showToast.infoToast("Password must be at least 6 characters long!")
+                showToast.warningToast("Password must be at least 6 characters long!")
             }
         }
     }
@@ -155,14 +155,17 @@ class StepTwoVerificationFragment : Fragment() {
                             sendToHome()
                         } else {
                             workInProgressEnd()
-                            showToast.errorToast("Incorrect password. Please try again.")
+                            showToast.motionErrorToast(
+                                "Error status",
+                                "Incorrect password. Please try again."
+                            )
                         }
                     } else {
                         workInProgressEnd()
-                        if (!internetStatus!!){
+                        if (!internetStatus!!) {
                             showToast.motionWarningToast("Warning", "You are currently offline")
-                        }else{
-                            showToast.errorToast("No such document found.")
+                        } else {
+                            showToast.motionErrorToast("Error status", "No such document found.")
                             sendToSignIn()
                         }
 
@@ -170,10 +173,10 @@ class StepTwoVerificationFragment : Fragment() {
                 }
                 .addOnFailureListener { e ->
                     workInProgressEnd()
-                    if (!internetStatus!!){
+                    if (!internetStatus!!) {
                         showToast.motionWarningToast("Warning", "You are currently offline")
-                    }else{
-                        showToast.errorToast("Error fetching document")
+                    } else {
+                        showToast.motionErrorToast("Error status", "Error fetching document")
                         Log.d(TAG, "checkPassword: ${e.message}")
                         sendToSignIn()
                     }
@@ -183,10 +186,10 @@ class StepTwoVerificationFragment : Fragment() {
                 }
         } else {
             workInProgressEnd()
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
-                showToast.errorToast("User not logged in.")
+            } else {
+                showToast.motionErrorToast("Error status", "User not logged in.")
                 sendToSignIn()
             }
         }
@@ -195,7 +198,8 @@ class StepTwoVerificationFragment : Fragment() {
     private fun handleForgetPassword() {
         workInProgressStart()
         fetchUserDetails {
-            verificationCode = sendEmail.sendAccountVerifyEmailOtp(email.toString(), name.toString())
+            verificationCode =
+                sendEmail.sendAccountVerifyEmailOtp(email.toString(), name.toString())
             workInProgressEnd()
             sendToForgetPasswordOtp()
         }
@@ -213,11 +217,11 @@ class StepTwoVerificationFragment : Fragment() {
                     Log.d("TAG", "User details fetched successfully: email=$email, name=$name")
                 } else {
                     workInProgressEnd()
-                    if (!internetStatus!!){
+                    if (!internetStatus!!) {
                         showToast.motionWarningToast("Warning", "You are currently offline")
-                    }else{
+                    } else {
                         Log.e("TAG", "No such document found for user $userUid")
-                        showToast.errorToast("No user details found")
+                        showToast.motionErrorToast("Error status", "No user details found")
                         sendToSignIn()
                     }
                 }
@@ -225,11 +229,11 @@ class StepTwoVerificationFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 workInProgressEnd()
-                if (!internetStatus!!){
+                if (!internetStatus!!) {
                     showToast.motionWarningToast("Warning", "You are currently offline")
-                }else{
+                } else {
                     Log.e("TAG", "Error fetching user details: ${e.message}")
-                    showToast.errorToast("Error fetching user details: ${e.message}")
+                    showToast.motionErrorToast("Error status", "${e.message}")
                     callback()
                     sendToSignIn()
                 }
