@@ -13,8 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.linkup.databinding.FragmentSignInBinding
+import com.example.linkup.utils.observeNetworkStatus
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -38,6 +40,7 @@ class SignInFragment : Fragment() {
     //Vibration component
     private lateinit var vibrator: Vibrator
     private lateinit var showToast: ShowToast
+    private var firstTimeCheck: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +58,18 @@ class SignInFragment : Fragment() {
         binding.signInFragmentCCP.registerCarrierNumberEditText(binding.signInFragmentPhoneNoET)
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
+
+        // Observe network connectivity status
+        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+            if (isSuccess) {
+                if (firstTimeCheck){
+                    showToast.motionSuccessToast(title, message)
+                }
+            } else {
+                showToast.motionWarningToast(title, message)
+                firstTimeCheck = true
+            }
+        }
 
         //Fetch phone number from edittext
         binding.signInFragmentPhoneNoET.addTextChangedListener(object : TextWatcher {

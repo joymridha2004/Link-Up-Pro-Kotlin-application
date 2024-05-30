@@ -16,10 +16,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.linkup.R
 import com.example.linkup.databinding.FragmentSignInOtpBinding
+import com.example.linkup.utils.observeNetworkStatus
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
@@ -51,6 +53,7 @@ class SignInOtpFragment : Fragment() {
     private var email: String? = null
     private var twoStepVerification: Boolean? = null
     private lateinit var showToast: ShowToast
+    private var firstTimeCheck: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -68,6 +71,18 @@ class SignInOtpFragment : Fragment() {
         fStore = FirebaseFirestore.getInstance()
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
+
+        // Observe network connectivity status
+        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+            if (isSuccess) {
+                if (firstTimeCheck){
+                    showToast.motionSuccessToast(title, message)
+                }
+            } else {
+                showToast.motionWarningToast(title, message)
+                firstTimeCheck = true
+            }
+        }
 
         //Handle action to verify button
         binding.signInOTPFragmentVerifyBT.setOnClickListener {

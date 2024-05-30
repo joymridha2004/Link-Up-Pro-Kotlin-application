@@ -1,4 +1,4 @@
-package com.example.linkup.utility
+package com.example.linkup.utils
 
 import android.os.AsyncTask
 import java.security.SecureRandom

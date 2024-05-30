@@ -38,9 +38,12 @@ android {
     buildFeatures {
         viewBinding = true
     }
-    packagingOptions{
+    packagingOptions {
         exclude("META-INF/NOTICE.md")
         exclude("META/INF/LICENSE.md")
+    }
+    dataBinding {
+        enable = true
     }
 }
 
@@ -74,5 +77,9 @@ dependencies {
     //Toast
     implementation("io.github.shashank02051997:FancyToast:2.0.2")
     implementation("com.github.Spikeysanju:MotionToast:1.4")
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
 
 }

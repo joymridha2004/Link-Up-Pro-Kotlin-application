@@ -2,55 +2,30 @@ package com.example.linkup.authentication
 
 import ShowToast
 import android.app.DatePickerDialog
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
-import android.graphics.Bitmap
-import android.util.Base64
 import android.graphics.drawable.Drawable
-import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Vibrator
-import android.provider.MediaStore
 import android.text.Editable
-import android.text.TextShaper
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Toast
-import android.widget.CompoundButton
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.linkup.R
 import com.example.linkup.databinding.FragmentSignUpBinding
-import com.example.linkup.utility.SendEmail
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
+import com.example.linkup.utils.SendEmail
+import com.example.linkup.utils.observeNetworkStatus
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.security.SecureRandom
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.Properties
-import javax.mail.Authenticator
-import javax.mail.Message
-import javax.mail.PasswordAuthentication
-import javax.mail.Session
-import javax.mail.Transport
-import javax.mail.internet.InternetAddress
-import javax.mail.internet.MimeMessage
 
 class SignUpFragment : Fragment() {
     //Binding to xml layout
@@ -89,6 +64,7 @@ class SignUpFragment : Fragment() {
     private var redColor: Int = 0
     private var blackColor: Int = 0
     private val sendEmail = SendEmail()
+    private var firstTimeCheck: Boolean = false
 
     private lateinit var showToast: ShowToast
     override fun onCreateView(
@@ -117,6 +93,18 @@ class SignUpFragment : Fragment() {
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
         materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+
+        // Observe network connectivity status
+        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+            if (isSuccess) {
+                if (firstTimeCheck){
+                    showToast.motionSuccessToast(title, message)
+                }
+            } else {
+                showToast.motionWarningToast(title, message)
+                firstTimeCheck = true
+            }
+        }
 
         // Fetch user name from the EditText
         binding.signUpFragmentNameET.addTextChangedListener(object : TextWatcher {

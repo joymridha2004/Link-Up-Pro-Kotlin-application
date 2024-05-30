@@ -12,13 +12,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.linkup.R
 import com.example.linkup.databinding.FragmentForgetPasswordOtpBinding
-import com.example.linkup.utility.SendEmail
+import com.example.linkup.utils.SendEmail
+import com.example.linkup.utils.observeNetworkStatus
 import com.google.firebase.auth.FirebaseAuth
 
 class ForgetPasswordOtpFragment : Fragment() {
@@ -41,7 +42,7 @@ class ForgetPasswordOtpFragment : Fragment() {
 
     private var sendEmail = SendEmail()
     private lateinit var showToast: ShowToast
-
+    private var firstTimeCheck: Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,6 +59,18 @@ class ForgetPasswordOtpFragment : Fragment() {
         vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
+
+        // Observe network connectivity status
+        observeNetworkStatus(requireContext(), viewLifecycleOwner.lifecycleScope) { title, message, isSuccess ->
+            if (isSuccess) {
+                if (firstTimeCheck){
+                    showToast.motionSuccessToast(title, message)
+                }
+            } else {
+                showToast.motionWarningToast(title, message)
+                firstTimeCheck = true
+            }
+        }
 
         //Handle action to verify button
         binding.forgetPasswordOtpFragmentVerifyButton.setOnClickListener {
