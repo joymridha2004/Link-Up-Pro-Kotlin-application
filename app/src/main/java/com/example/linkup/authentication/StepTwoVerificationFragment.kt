@@ -195,7 +195,7 @@ class StepTwoVerificationFragment : Fragment() {
     private fun handleForgetPassword() {
         workInProgressStart()
         fetchUserDetails {
-            verificationCode = sendEmail.sendEmailOtp(email.toString(), name.toString())
+            verificationCode = sendEmail.sendAccountVerifyEmailOtp(email.toString(), name.toString())
             workInProgressEnd()
             sendToForgetPasswordOtp()
         }

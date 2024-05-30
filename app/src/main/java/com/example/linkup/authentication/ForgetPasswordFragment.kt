@@ -167,7 +167,7 @@ class ForgetPasswordFragment : Fragment() {
                             sendEmail.sendPasswordResetSuccessEmail(args.email, args.name)
                             workInProgressEnd()
                             Log.d("TAG", "Password updated successfully for user $userUid")
-                            showToast.motionSuccessToast("Success", "Login Successful")
+                            showToast.motionSuccessToast("Success", "Password update successfully")
                             sendToTwoStepVerification()
                         }
                         .addOnFailureListener { e ->

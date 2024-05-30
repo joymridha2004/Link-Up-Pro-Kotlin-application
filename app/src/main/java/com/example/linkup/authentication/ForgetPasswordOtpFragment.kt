@@ -109,7 +109,7 @@ class ForgetPasswordOtpFragment : Fragment() {
             vibrator.vibrate(100)
             if (!resendOtpProcess) {
                 workinProgressStart()
-                verificationCode = sendEmail.sendEmailOtp(args.email, args.name)
+                verificationCode = sendEmail.sendAccountVerifyEmailOtp(args.email, args.name)
                 workInProgressEnd()
                 resendOTPTvVisibility()
             } else {

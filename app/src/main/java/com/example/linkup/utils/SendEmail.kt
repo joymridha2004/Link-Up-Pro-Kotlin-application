@@ -12,7 +12,7 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
 class SendEmail {
-    fun sendEmailOtp(receiverEmail: String, receiverName: String): String {
+    fun sendCreateAccountEmailOtp(receiverEmail: String, receiverName: String): String {
         val stringSenderEmail = "linkuppro2024@gmail.com"
         val stringPasswordSenderEmail = "dbfnbqktghijajtj"
         val stringReceiverEmail =
@@ -34,6 +34,37 @@ class SendEmail {
                     Best regards,
                     The Link Up Pro Team
                 """.trimIndent()
+        SendMail(
+            stringSenderEmail,
+            stringPasswordSenderEmail,
+            stringReceiverEmail,
+            stringSubject,
+            stringBody
+        ).execute()
+        return verificationCode
+    }
+
+    fun sendAccountVerifyEmailOtp(receiverEmail: String, receiverName: String): String {
+        val stringSenderEmail = "linkuppro2024@gmail.com"
+        val stringPasswordSenderEmail = "dbfnbqktghijajtj"
+        val stringReceiverEmail = receiverEmail
+        val stringSubject = "Verify Your Email - Link Up Pro"
+
+        // Generate random 6-digit code
+        val verificationCode = generateRandomCode()
+
+        val stringBody = """
+            Hello $receiverName,
+            
+            We received a request to verify your email address for Link Up Pro. Please enter the following verification code in the app to complete the process:
+            
+            $verificationCode
+            
+            If you did not request this verification, please ignore this email.
+            
+            Best regards,
+            The Link Up Pro Team
+        """.trimIndent()
         SendMail(
             stringSenderEmail,
             stringPasswordSenderEmail,

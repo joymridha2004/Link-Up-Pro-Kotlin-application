@@ -127,7 +127,7 @@ class SignUpOtpFragment : Fragment() {
             }else{
                 if (!resendOtpProcess) {
                     workInProgressStart()
-                    verificationCode = sendEmail.sendEmailOtp(args.email, args.name)
+                    verificationCode = sendEmail.sendCreateAccountEmailOtp(args.email, args.name)
                     workInProgressEnd()
                     resendOTPTvVisibility()
                 } else {

@@ -187,7 +187,7 @@ class SignUpFragment : Fragment() {
             }else{
                 if (allDetailsAreOk && termsAccepted) {
                     workInProgressStart()
-                    verificationCode = sendEmail.sendEmailOtp(email.toString(), name.toString())
+                    verificationCode = sendEmail.sendCreateAccountEmailOtp(email.toString(), name.toString())
                     workInProgressEnd()
                     sendToSignUpOtp()
                 } else if (!termsAccepted && allDetailsAreOk) {
