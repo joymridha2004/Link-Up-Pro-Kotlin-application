@@ -255,12 +255,7 @@ class StepTwoVerificationFragment : Fragment() {
 
     private fun sendToHome() {
         SplashFragment.setLoginStatus(requireContext(), true)
-        val direction =
-            StepTwoVerificationFragmentDirections.actionStepTwoVerificationFragmentToHomeFragment(
-                args.phoneNumber,
-                args.userUid
-            )
-        findNavController().navigate(direction)
+        findNavController().navigate(R.id.action_stepTwoVerificationFragment_to_homeFragment)
     }
 
     private fun sendToSignIn() {

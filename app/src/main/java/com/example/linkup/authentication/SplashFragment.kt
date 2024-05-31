@@ -38,12 +38,7 @@ class SplashFragment : Fragment() {
     }
 
     private fun sendToHome() {
-        val direction =
-            SplashFragmentDirections.actionSplashFragmentToHomeFragment(
-                getUserPhoneNumber(requireContext()).toString(),
-                getUserUid(requireContext()).toString()
-            )
-        findNavController().navigate(direction)
+        findNavController().navigate(R.id.action_splashFragment_to_homeFragment)
     }
 
     // UI changes

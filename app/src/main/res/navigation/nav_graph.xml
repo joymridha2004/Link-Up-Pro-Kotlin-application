@@ -13,11 +13,15 @@
         <action
             android:id="@+id/action_splashFragment_to_signInFragment"
             app:destination="@id/signInFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_splashFragment_to_homeFragment"
             app:destination="@id/homeFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -28,7 +32,11 @@
         tools:layout="@layout/fragment_sign_in">
         <action
             android:id="@+id/action_signInFragment_to_signInOtpFragment"
-            app:destination="@id/signInOtpFragment" />
+            app:destination="@id/signInOtpFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
     </fragment>
     <fragment
         android:id="@+id/signInOtpFragment"
@@ -50,16 +58,26 @@
         <action
             android:id="@+id/action_signInOtpFragment_to_signUpFragment"
             app:destination="@id/signUpFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right"
             app:popUpTo="@id/signInOtpFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_signInOtpFragment_to_stepTwoVerificationFragment"
             app:destination="@id/stepTwoVerificationFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right"
             app:popUpTo="@id/signInOtpFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_signInOtpFragment_to_signInFragment"
             app:destination="@id/signInFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
             app:launchSingleTop="true"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
@@ -69,12 +87,6 @@
         android:name="com.example.linkup.authentication.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home">
-        <argument
-            android:name="phoneNumber"
-            app:argType="string" />
-        <argument
-            android:name="userUid"
-            app:argType="string" />
         <action
             android:id="@+id/action_homeFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
@@ -90,6 +102,8 @@
         <action
             android:id="@+id/action_signUpFragment_to_signInFragment"
             app:destination="@id/signInFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
         <argument
@@ -97,7 +111,11 @@
             app:argType="string" />
         <action
             android:id="@+id/action_signUpFragment_to_signUpOtpFragment"
-            app:destination="@id/signUpOtpFragment" />
+            app:destination="@id/signUpOtpFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
     </fragment>
     <fragment
         android:id="@+id/stepTwoVerificationFragment"
@@ -107,6 +125,10 @@
         <action
             android:id="@+id/action_stepTwoVerificationFragment_to_homeFragment"
             app:destination="@id/homeFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
         <argument
@@ -115,6 +137,8 @@
         <action
             android:id="@+id/action_stepTwoVerificationFragment_to_signInFragment"
             app:destination="@id/signInFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
         <argument
@@ -122,7 +146,11 @@
             app:argType="string" />
         <action
             android:id="@+id/action_stepTwoVerificationFragment_to_forgetPasswordOtpFragment"
-            app:destination="@id/forgetPasswordOtpFragment" />
+            app:destination="@id/forgetPasswordOtpFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
     </fragment>
     <fragment
         android:id="@+id/signUpOtpFragment"
@@ -147,6 +175,10 @@
         <action
             android:id="@+id/action_signUpOtpFragment_to_homeFragment"
             app:destination="@id/homeFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
         <argument
@@ -155,6 +187,8 @@
         <action
             android:id="@+id/action_signUpOtpFragment_to_signInFragment"
             app:destination="@id/signInFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -181,11 +215,17 @@
         <action
             android:id="@+id/action_forgetPasswordOtpFragment_to_forgetPasswordFragment"
             app:destination="@id/forgetPasswordFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right"
             app:popUpTo="@id/forgetPasswordOtpFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_forgetPasswordOtpFragment_to_signInFragment"
             app:destination="@id/signInFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -203,6 +243,8 @@
         <action
             android:id="@+id/action_forgetPasswordFragment_to_signInFragment"
             app:destination="@id/signInFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
         <argument
@@ -214,6 +256,10 @@
         <action
             android:id="@+id/action_forgetPasswordFragment_to_stepTwoVerificationFragment"
             app:destination="@id/stepTwoVerificationFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right"
             app:popUpTo="@id/stepTwoVerificationFragment"
             app:popUpToInclusive="true" />
     </fragment>

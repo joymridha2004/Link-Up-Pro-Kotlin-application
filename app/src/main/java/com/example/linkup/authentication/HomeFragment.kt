@@ -19,7 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
-    private val args: HomeFragmentArgs by navArgs()
     private lateinit var mAuth: FirebaseAuth
     private lateinit var fStore: FirebaseFirestore
     private lateinit var showToast: ShowToast
@@ -72,13 +71,13 @@ class HomeFragment : Fragment() {
     }
 
     private fun fetchUserDetailsThenUpdate(callback: () -> Unit) {
-        val userUid = args.userUid
+        val userUid = mAuth.uid.toString()
         val documentReference = fStore.collection("usersDetails").document(userUid)
 
         documentReference.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
-                    SplashFragment.setUserUid(requireContext(), args.userUid)
+                    SplashFragment.setUserUid(requireContext(), userUid)
                     SplashFragment.setUserName(
                         requireContext(),
                         documentSnapshot.getString("userName").toString()
