@@ -2,12 +2,15 @@ package com.example.linkup.authentication
 
 import ShowToast
 import android.app.DatePickerDialog
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Vibrator
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,10 +25,16 @@ import com.example.linkup.R
 import com.example.linkup.databinding.FragmentSignUpBinding
 import com.example.linkup.utils.SendEmail
 import com.example.linkup.utils.observeNetworkStatus
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class SignUpFragment : Fragment() {
     //Binding to xml layout
@@ -40,10 +49,12 @@ class SignUpFragment : Fragment() {
     //Firebase database
     private lateinit var fStore: FirebaseFirestore
 
+    private lateinit var fStorage: FirebaseStorage
+
     //Vibration component
     private lateinit var vibrator: Vibrator
 
-    //Metarial
+    //Material
     private lateinit var materialAlertDialogBuilder: MaterialAlertDialogBuilder
 
     //Layout functionality variable
@@ -58,6 +69,7 @@ class SignUpFragment : Fragment() {
     private var dob: String? = null
     private var userUid: String? = null
     private var verificationCode: String? = null
+    private val password: String = "admin@1234"
 
     private var rightIcon: Drawable? = null
 
@@ -68,6 +80,8 @@ class SignUpFragment : Fragment() {
 
     private lateinit var showToast: ShowToast
     private var internetStatus: Boolean? = null
+    private var emailVerificationStatus: Boolean? = false
+    private var verificationSuccessfulEmail: String = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -81,6 +95,7 @@ class SignUpFragment : Fragment() {
         //Firebase instance create
         mAuth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
+        fStorage = FirebaseStorage.getInstance()
         //UserUid get from previous fragment
         userUid = args.userUid
         //Set drawable
@@ -94,6 +109,22 @@ class SignUpFragment : Fragment() {
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
         materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+        //Fetch email verification status and email from previous fragment
+        emailVerificationStatus = SplashFragment.getEmailVerificationStatus(requireContext())
+        if (emailVerificationStatus!!) {
+            verificationSuccessfulEmail = email.toString()
+            binding.signUpFragmentNextBT.text = "Next"
+        }
+        //set all details
+        binding.signUpFragmentNameET.setText(
+            SplashFragment.getUserName(requireContext()).toString()
+        )
+        binding.signUpFragmentPhoneNumberTV.text =
+            SplashFragment.getUserPhoneNumber(requireContext()).toString()
+        binding.signUpFragmentEmailET.setText(
+            SplashFragment.getUserEmailId(requireContext()).toString()
+        )
+        binding.signUpFragmentDOBTV.text = SplashFragment.getUserDOB(requireContext()).toString()
 
         // Observe network connectivity status
         observeNetworkStatus(
@@ -138,12 +169,36 @@ class SignUpFragment : Fragment() {
                 binding.signUpFragmentEmailET.setHintTextColor(blackColor)
                 binding.signUpFragmentEmailET.setTextColor(blackColor)
                 email = binding.signUpFragmentEmailET.text.toString()
-                if (email.toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex())) {
-                    binding.signUpFragmentEmailET.setCompoundDrawables(null, null, rightIcon, null)
-                    emailIsEmpty = false
+                if (email.toString()
+                        .matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex())
+                ) {
+                    if (email == verificationSuccessfulEmail && email != "" && verificationSuccessfulEmail != "") {
+                        binding.signUpFragmentEmailET.setCompoundDrawables(
+                            null,
+                            null,
+                            rightIcon,
+                            null
+                        )
+                        emailIsEmpty = false
+                        emailVerificationStatus = true
+                        binding.signUpFragmentNextBT.text = "Next"
+                    } else {
+                        binding.signUpFragmentEmailET.setCompoundDrawables(
+                            null,
+                            null,
+                            null,
+                            null
+                        )
+                        emailIsEmpty = false
+                        emailVerificationStatus = false
+                        binding.signUpFragmentNextBT.text = "Verify"
+                    }
+
                 } else {
                     emailIsEmpty = true
                     binding.signUpFragmentEmailET.setCompoundDrawables(null, null, null, null)
+                    emailVerificationStatus = false
+                    binding.signUpFragmentNextBT.text = "Verify"
                 }
             }
 
@@ -158,23 +213,33 @@ class SignUpFragment : Fragment() {
             dob = binding.signUpFragmentDOBTV.text.toString()
         }
 
+        // Check if terms are already accepted
+        termsAccepted = SplashFragment.isTermsAccepted(requireContext())
+        binding.signUpPageTermsAndConditionsCB.isChecked = termsAccepted
+
         binding.signUpPageTermsAndConditionsCB.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            if (isChecked && !termsAccepted) {
                 materialAlertDialogBuilder.setTitle(R.string.terms_and_conditions)
                 materialAlertDialogBuilder.setMessage(R.string.terms_and_conditions_content)
                 materialAlertDialogBuilder.setPositiveButton("Accept") { dialogInterface, which ->
                     termsAccepted = true
+                    SplashFragment.saveTermsAccepted(requireContext(), true)
                     binding.signUpPageTermsAndConditionsCB.isChecked = true
                     dialogInterface.dismiss()
                 }
                 materialAlertDialogBuilder.setNegativeButton("Decline") { dialogInterface, which ->
                     termsAccepted = false
+                    SplashFragment.saveTermsAccepted(requireContext(), false)
                     binding.signUpPageTermsAndConditionsCB.isChecked = false
                     dialogInterface.dismiss()
                 }
                 materialAlertDialogBuilder.show()
+            } else {
+                termsAccepted = isChecked
+                SplashFragment.saveTermsAccepted(requireContext(), isChecked)
             }
         }
+
 
         // Handle action on sign up button
         binding.signUpFragmentNextBT.setOnClickListener {
@@ -182,14 +247,39 @@ class SignUpFragment : Fragment() {
             checkAllDetails()
             findWhereIsEmpty()
             allDetailsUpdated()
-            if (!internetStatus!!){
+            if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
-            }else{
+            } else {
                 if (allDetailsAreOk && termsAccepted) {
-                    workInProgressStart()
-                    verificationCode = sendEmail.sendCreateAccountEmailOtp(email.toString(), name.toString())
-                    workInProgressEnd()
-                    sendToSignUpOtp()
+                    if (emailVerificationStatus!!) {
+                        workInProgressStart()
+                        val resourceId: Int = R.drawable.user_profile_icon
+                        val uri: Uri = resourceIdToUri(requireActivity(), resourceId)
+                        if (uri != null) {
+                            uploadImage(uri, { imageUrl ->
+                                updateUserData(imageUrl.toString())
+                            }, { e ->
+                                workInProgressEnd()
+                                showToast.motionErrorToast("Failed to upload image", "${e.message}")
+                            })
+                        } else {
+                            updateUserData("")  // Handle case where URI is null
+                        }
+                    } else {
+                        workInProgressStart()
+                        SplashFragment.setUserName(requireContext(), name.toString())
+                        SplashFragment.setUserPhoneNumber(requireContext(), args.phoneNumber)
+                        SplashFragment.setUserEmailId(requireContext(), email.toString())
+                        SplashFragment.setUserPassword(requireContext(), password)
+                        SplashFragment.setUserUid(requireContext(), mAuth.uid.toString())
+                        SplashFragment.setUserDOB(requireContext(), dob.toString())
+                        SplashFragment.setTwoStepVerification(requireContext(), false)
+                        SplashFragment.setEmailVerificationStatus(requireContext(), false)
+                        verificationCode =
+                            sendEmail.sendCreateAccountEmailOtp(email.toString(), name.toString())
+                        workInProgressEnd()
+                        sendToSignUpOtp()
+                    }
                 } else if (!termsAccepted && allDetailsAreOk) {
                     showToast.warningToast("You must accept the terms and conditions to proceed!")
                 } else {
@@ -259,6 +349,59 @@ class SignUpFragment : Fragment() {
         datePickerDialog.show()
     }
 
+    //Update user data from firebase
+    private fun updateUserData(imageUrl: String) {
+        val usersDetails: MutableMap<String, Any> = HashMap()
+        usersDetails["userName"] = name.toString()
+        usersDetails["userPhoto"] = imageUrl
+        usersDetails["onlineStatus"] = "default"
+        usersDetails["accountCreatedTimeAndDate"] = getTimeAndDate()
+        usersDetails["userPhoneNumber"] = args.phoneNumber
+        usersDetails["userEmailId"] = verificationSuccessfulEmail.toString()
+        usersDetails["userDOB"] = dob.toString()
+        usersDetails["userPassword"] = password.toString()
+        usersDetails["twoStepVerification"] = false
+
+        fStore.collection("usersDetails").document(args.userUid.toString())
+            .set(usersDetails)
+            .addOnCompleteListener(OnCompleteListener<Void?> {
+                sendEmail.sendWelcomeEmail(verificationSuccessfulEmail.toString(), name.toString())
+                workInProgressEnd()
+                showToast.motionSuccessToast("Success", "Login Successful")
+                sendToHome()
+            }).addOnFailureListener(OnFailureListener { e ->
+                workInProgressEnd()
+                if (internetStatus!!) {
+                    showToast.motionErrorToast("Error status", "Internal error!")
+                    Log.d(ContentValues.TAG, "updateUserData: ${e.message}")
+                    sendToSignIn()
+                } else {
+                    showToast.motionWarningToast("Warning", "You are currently offline")
+                }
+            })
+    }
+
+    //Helping function
+    private fun resourceIdToUri(context: Context, resourceId: Int): Uri {
+        return Uri.parse("android.resource://" + context.packageName + "/" + resourceId)
+    }
+
+    private fun getTimeAndDate(): String {
+        val currentDate = SimpleDateFormat("dd - MM - yyyy", Locale.getDefault()).format(Date())
+        val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
+        return "$currentDate : $currentTime"
+    }
+
+    fun uploadImage(uri: Uri, onSuccess: (Uri) -> Unit, onFailure: (Exception) -> Unit) {
+        val storageRef = fStorage.reference
+        val imageRef = storageRef.child("profilePictures/${mAuth.currentUser?.uid}")
+        val uploadTask = imageRef.putFile(uri)
+        uploadTask.addOnSuccessListener {
+            val result = it.metadata?.reference?.downloadUrl
+            result?.addOnSuccessListener(onSuccess)
+        }.addOnFailureListener(onFailure)
+    }
+
     //User details are filled properly or not
     private fun checkAllDetails() {
         allDetailsAreOk = !nameIsEmpty && !emailIsEmpty && !dobIsEmpty
@@ -297,34 +440,21 @@ class SignUpFragment : Fragment() {
         findNavController().navigate(R.id.action_signUpFragment_to_signInFragment)
     }
 
+    private fun sendToHome() {
+        SplashFragment.setLoginStatus(requireContext(), true)
+        findNavController().navigate(R.id.action_signUpFragment_to_homeFragment)
+    }
+
+
     private fun sendToSignUpOtp() {
         SplashFragment.setLoginStatus(requireContext(), false)
         val direction =
             SignUpFragmentDirections.actionSignUpFragmentToSignUpOtpFragment(
-                args.phoneNumber,
                 name.toString(),
                 email.toString(),
-                dob.toString(),
-                userUid.toString(),
                 verificationCode.toString()
             )
         findNavController().navigate(direction)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            val navController = findNavController()
-            val currentDestination = navController.currentDestination?.id
-            if (currentDestination == R.id.signUpFragment) {
-                // Handle back press action
-                findNavController().navigate(R.id.action_signUpFragment_to_signInFragment)
-            } else {
-                // Call the super method to allow normal back press behavior
-                isEnabled = false
-                requireActivity().onBackPressed()
-            }
-        }
     }
 
 }

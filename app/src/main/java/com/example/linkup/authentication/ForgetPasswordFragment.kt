@@ -214,20 +214,4 @@ class ForgetPasswordFragment : Fragment() {
         findNavController().navigate(direction)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            val navController = findNavController()
-            val currentDestination = navController.currentDestination?.id
-            if (currentDestination == R.id.forgetPasswordFragment) {
-                // Handle back press action
-                findNavController().navigate(R.id.action_forgetPasswordFragment_to_signInFragment)
-            } else {
-                // Call the super method to allow normal back press behavior
-                isEnabled = false
-                requireActivity().onBackPressed()
-            }
-        }
-    }
-
 }

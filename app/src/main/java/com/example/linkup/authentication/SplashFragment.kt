@@ -54,6 +54,8 @@ class SplashFragment : Fragment() {
     companion object {
         private const val PREFS_NAME = "MyPrefsFile"
         private const val LOGIN_STATUS = "login_status"
+        private const val EMAIL_VERIFICATION_STATUS = "EmailVerificationStatus"
+        private const val TWO_STEP_VERIFICATION = "TwoStepVerification"
 
         fun setLoginStatus(context: Context, status: Boolean) {
             val sharedPref =
@@ -67,6 +69,20 @@ class SplashFragment : Fragment() {
         fun getLoginStatus(context: Context): Boolean {
             val sharedPref = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             return sharedPref.getBoolean(LOGIN_STATUS, false)
+        }
+
+        fun setEmailVerificationStatus(context: Context, emailStatus: Boolean) {
+            val sharedPref =
+                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) ?: return
+            with(sharedPref.edit()) {
+                putBoolean(EMAIL_VERIFICATION_STATUS, emailStatus)
+                apply()
+            }
+        }
+
+        fun getEmailVerificationStatus(context: Context): Boolean {
+            val sharedPref = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            return sharedPref.getBoolean(EMAIL_VERIFICATION_STATUS, false)
         }
 
         fun setUserName(context: Context, userName: String) {
@@ -139,5 +155,46 @@ class SplashFragment : Fragment() {
             return sharedPref.getString("userUid", null)
         }
 
+        fun setUserDOB(context: Context, userDOB: String) {
+            val sharedPref =
+                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) ?: return
+            with(sharedPref.edit()) {
+                putString("userDOB", userDOB)
+                apply()
+            }
+        }
+
+        fun getUserDOB(context: Context): String? {
+            val sharedPref = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            return sharedPref.getString("userDOB", null)
+        }
+
+        fun setTwoStepVerification(context: Context, twoStepVerification: Boolean) {
+            val sharedPref =
+                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) ?: return
+            with(sharedPref.edit()) {
+                putBoolean(TWO_STEP_VERIFICATION, twoStepVerification)
+                apply()
+            }
+        }
+
+        fun getTwoStepVerification(context: Context): Boolean {
+            val sharedPref = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            return sharedPref.getBoolean(TWO_STEP_VERIFICATION, false)
+        }
+
+        //acceptance status in shared preferences:
+        fun saveTermsAccepted(context: Context, accepted: Boolean) {
+            val sharedPref = context.getSharedPreferences("SignUpPrefs", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                putBoolean("termsAccepted", accepted)
+                apply()
+            }
+        }
+
+        fun isTermsAccepted(context: Context): Boolean {
+            val sharedPref = context.getSharedPreferences("SignUpPrefs", Context.MODE_PRIVATE)
+            return sharedPref.getBoolean("termsAccepted", false)
+        }
     }
 }

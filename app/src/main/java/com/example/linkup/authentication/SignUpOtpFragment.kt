@@ -41,22 +41,16 @@ class SignUpOtpFragment : Fragment() {
     //Binding to xml layout
     private lateinit var binding: FragmentSignUpOtpBinding
 
-    //Firebase authentication
-    private lateinit var mAuth: FirebaseAuth
-
     //Declare nav graph argument
     private val args: SignUpOtpFragmentArgs by navArgs()
 
-    //Firebase database
-    private lateinit var fStore: FirebaseFirestore
-
-    private lateinit var fStorage: FirebaseStorage
+    //Firebase authentication
+    private lateinit var mAuth: FirebaseAuth
 
     //Vibration component
     private lateinit var vibrator: Vibrator
 
     //Local variable
-    private val password: String = "admin@1234"
     private var typeCode: String? = null
     private var verificationCode: String? = null
     private var resendOtpProcess = false
@@ -71,21 +65,18 @@ class SignUpOtpFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentSignUpOtpBinding.inflate(inflater, container, false)
-        //Firebase instance create
-        mAuth = FirebaseAuth.getInstance()
-        fStore = FirebaseFirestore.getInstance()
-        fStorage = FirebaseStorage.getInstance()
         //Fetch and show email form TV
         binding.signUpOTPFragmentEmailTV.text = args.email
-        //Fetch otp form user
-        typeCode = binding.signUpOTPFragmentOtpET.text.toString()
         //Fetch otp previous fragment
         verificationCode = args.verificationCode
         //Vibration instance create
         vibrator = requireActivity().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
-
+        //Firebase instance create
+        mAuth = FirebaseAuth.getInstance()
+        //set SharedPreferences
+        SplashFragment.setEmailVerificationStatus(requireContext(),false)
         // Observe network connectivity status
         observeNetworkStatus(
             requireContext(),
@@ -109,22 +100,13 @@ class SignUpOtpFragment : Fragment() {
             if (internetStatus == null || !internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
             } else {
+                //Fetch otp form user
                 typeCode = binding.signUpOTPFragmentOtpET.text.toString()
                 if (typeCode!!.length == 6) {
                     if (typeCode == verificationCode) {
                         workInProgressStart()
-                        val resourceId: Int = R.drawable.user_profile_icon
-                        val uri: Uri = resourceIdToUri(requireActivity(), resourceId)
-                        if (uri != null) {
-                            uploadImage(uri, { imageUrl ->
-                                updateUserData(imageUrl.toString())
-                            }, { e ->
-                                workInProgressEnd()
-                                showToast.motionErrorToast("Failed to upload image","${e.message}")
-                            })
-                        } else {
-                            updateUserData("")  // Handle case where URI is null
-                        }
+                        workInProgressEnd()
+                        sendToSignUp()
                     } else {
                         showToast.errorToast("Wrong OTP!")
                     }
@@ -184,85 +166,9 @@ class SignUpOtpFragment : Fragment() {
         }, 60000)
     }
 
-    //Update user data from firebase
-    private fun updateUserData(imageUrl: String) {
-        val usersDetails: MutableMap<String, Any> = HashMap()
-        usersDetails["userName"] = args.name
-        usersDetails["userPhoto"] = imageUrl
-        usersDetails["accountCreatedTimeAndDate"] = getTimeAndDate()
-        usersDetails["userPhoneNumber"] = args.phoneNumber.toString()
-        usersDetails["userEmailId"] = args.email.toString()
-        usersDetails["userDOB"] = args.dob.toString()
-        usersDetails["userPassword"] = password.toString()
-        usersDetails["twoStepVerification"] = false
-
-        fStore.collection("usersDetails").document(args.userUid.toString())
-            .set(usersDetails)
-            .addOnCompleteListener(OnCompleteListener<Void?> {
-                sendEmail.sendWelcomeEmail(args.email, args.name)
-                workInProgressEnd()
-                showToast.motionSuccessToast("Success", "Login Successful")
-                sendToHome()
-            }).addOnFailureListener(OnFailureListener { e ->
-                workInProgressEnd()
-                if (internetStatus!!) {
-                    showToast.motionErrorToast("Error status","Internal error!")
-                    Log.d(TAG, "updateUserData: ${e.message}")
-                    sendToSignIn()
-                } else {
-                    showToast.motionWarningToast("Warning", "You are currently offline")
-                }
-            })
-    }
-
-
-    //Helping function
-    private fun resourceIdToUri(context: Context, resourceId: Int): Uri {
-        return Uri.parse("android.resource://" + context.packageName + "/" + resourceId)
-    }
-
-    private fun getTimeAndDate(): String {
-        val currentDate = SimpleDateFormat("dd - MM - yyyy", Locale.getDefault()).format(Date())
-        val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-        return "$currentDate : $currentTime"
-    }
-
-    fun uploadImage(uri: Uri, onSuccess: (Uri) -> Unit, onFailure: (Exception) -> Unit) {
-        val storageRef = fStorage.reference
-        val imageRef = storageRef.child("profilePictures/${mAuth.currentUser?.uid}")
-        val uploadTask = imageRef.putFile(uri)
-        uploadTask.addOnSuccessListener {
-            val result = it.metadata?.reference?.downloadUrl
-            result?.addOnSuccessListener(onSuccess)
-        }.addOnFailureListener(onFailure)
-    }
-
-    //Coming fragment
-    private fun sendToHome() {
-        SplashFragment.setLoginStatus(requireContext(), true)
-        findNavController().navigate(R.id.action_signUpOtpFragment_to_homeFragment)
-    }
-
-    private fun sendToSignIn() {
-        SplashFragment.setLoginStatus(requireContext(), false)
-        mAuth.signOut()
-        findNavController().navigate(R.id.action_signUpOtpFragment_to_signInFragment)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            val navController = findNavController()
-            val currentDestination = navController.currentDestination?.id
-            if (currentDestination == R.id.signUpOtpFragment) {
-                // Handle back press action
-                findNavController().navigate(R.id.action_signUpOtpFragment_to_signInFragment)
-            } else {
-                // Call the super method to allow normal back press behavior
-                isEnabled = false
-                requireActivity().onBackPressed()
-            }
-        }
+    private fun sendToSignUp() {
+        SplashFragment.setEmailVerificationStatus(requireContext(), true)
+        findNavController().popBackStack(R.id.signUpOtpFragment, true)
     }
 
 }

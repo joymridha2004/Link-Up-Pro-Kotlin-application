@@ -1,4 +1,4 @@
-package com.example.linkup.authentication
+package com.example.linkup.homeFragments
 
 import ShowToast
 import android.os.Bundle
@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.linkup.R
+import com.example.linkup.authentication.SplashFragment
 import com.example.linkup.databinding.FragmentHomeBinding
 import com.example.linkup.utils.observeNetworkStatus
 import com.google.firebase.auth.FirebaseAuth
@@ -43,8 +43,8 @@ class HomeFragment : Fragment() {
         binding.homeFragmentTV.text = "Home Fragment"
 
         binding.HomeFragmentLogoutButton.setOnClickListener {
-            mAuth.signOut()
-            sendToSignIn()
+//            mAuth.signOut()
+//            sendToSignIn()
         }
 
         // Observe network connectivity status
@@ -94,6 +94,16 @@ class HomeFragment : Fragment() {
                         requireContext(),
                         documentSnapshot.getString("userPassword").toString()
                     )
+                    SplashFragment.setUserDOB(
+                        requireContext(),
+                        documentSnapshot.getString("userDOB").toString()
+                    )
+                    documentSnapshot.getBoolean("twoStepVerification")?.let {
+                        SplashFragment.setTwoStepVerification(
+                            requireContext(),
+                            it
+                        )
+                    }
                     Log.d("TAG", "User details fetched successfully")
                 } else {
                     Log.e("TAG", "No such document found for user $userUid")

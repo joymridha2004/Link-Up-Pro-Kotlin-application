@@ -259,6 +259,7 @@ class StepTwoVerificationFragment : Fragment() {
     }
 
     private fun sendToSignIn() {
+        mAuth.signOut()
         SplashFragment.setLoginStatus(requireContext(), false)
         // Before navigating, ensure we are in the correct fragment context
         val navController = findNavController()
@@ -270,22 +271,6 @@ class StepTwoVerificationFragment : Fragment() {
                 "NavigationDebug",
                 "Attempted navigation from wrong fragment: ${navController.currentDestination?.label}"
             )
-        }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            val navController = findNavController()
-            val currentDestination = navController.currentDestination?.id
-            if (currentDestination == R.id.stepTwoVerificationFragment) {
-                // Handle back press action
-                findNavController().navigate(R.id.action_stepTwoVerificationFragment_to_signInFragment)
-            } else {
-                // Call the super method to allow normal back press behavior
-                isEnabled = false
-                requireActivity().onBackPressed()
-            }
         }
     }
 

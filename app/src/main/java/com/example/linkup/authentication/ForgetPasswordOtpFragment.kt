@@ -29,9 +29,6 @@ class ForgetPasswordOtpFragment : Fragment() {
     //Vibration component
     private lateinit var vibrator: Vibrator
 
-    //Firebase authentication
-    private lateinit var mAuth: FirebaseAuth
-
     //Declare nav graph argument
     private val args: ForgetPasswordOtpFragmentArgs by navArgs()
 
@@ -50,8 +47,6 @@ class ForgetPasswordOtpFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentForgetPasswordOtpBinding.inflate(inflater, container, false)
-        //Firebase instance create
-        mAuth = FirebaseAuth.getInstance()
         //Fetch and show email form TV
         binding.forgetPasswordOtpFragmentEmailTV.text = args.email
         //Fetch otp previous fragment
@@ -159,22 +154,6 @@ class ForgetPasswordOtpFragment : Fragment() {
         binding.forgetPasswordOtpFragmentVerifyButton.visibility = View.INVISIBLE
         binding.forgetPasswordOtpFragmentPB.visibility = View.VISIBLE
         binding.resendOTPTV.isEnabled = false
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            val navController = findNavController()
-            val currentDestination = navController.currentDestination?.id
-            if (currentDestination == R.id.forgetPasswordOtpFragment) {
-                // Handle back press action
-                findNavController().navigate(R.id.action_forgetPasswordOtpFragment_to_signInFragment)
-            } else {
-                // Call the super method to allow normal back press behavior
-                isEnabled = false
-                requireActivity().onBackPressed()
-            }
-        }
     }
 
 }

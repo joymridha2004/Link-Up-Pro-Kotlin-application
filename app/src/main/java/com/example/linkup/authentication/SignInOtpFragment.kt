@@ -74,6 +74,16 @@ class SignInOtpFragment : Fragment() {
         fStore = FirebaseFirestore.getInstance()
         // Initialize ShowToast
         showToast = ShowToast(requireContext())
+        //set SharedPreferences
+        SplashFragment.setUserName(requireContext(),"")
+        SplashFragment.setUserPhoneNumber(requireContext(),args.phoneNumber)
+        SplashFragment.setUserEmailId(requireContext(),"")
+        SplashFragment.setUserPassword(requireContext(),"")
+        SplashFragment.setUserUid(requireContext(),"")
+        SplashFragment.setUserDOB(requireContext(),"")
+        SplashFragment.setTwoStepVerification(requireContext(),false)
+        SplashFragment.setEmailVerificationStatus(requireContext(),false)
+        SplashFragment.saveTermsAccepted(requireContext(), false)
 
         // Observe network connectivity status
         observeNetworkStatus(
@@ -251,7 +261,7 @@ class SignInOtpFragment : Fragment() {
                     if (!internetStatus!!) {
                         showToast.motionWarningToast("Warning", "You are currently offline")
                     } else {
-                        showToast.motionErrorToast("Error status","Error fetching user data!")
+                        showToast.motionErrorToast("Error status", "Error fetching user data!")
                         Log.d("TAG", "Task is unsuccessful: ${task.exception.toString()}")
                         sendToSignIn()
                     }
@@ -262,7 +272,7 @@ class SignInOtpFragment : Fragment() {
             if (!internetStatus!!) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
             } else {
-                showToast.motionErrorToast("Error status","Internal error!")
+                showToast.motionErrorToast("Error status", "Internal error!")
                 Log.d("TAG", "UserUid is null")
                 sendToSignIn()
             }
