@@ -5,5 +5,9 @@
     <stroke
         android:width="2dp"
         android:color="@color/white" />
-    <solid android:color="@color/themeColor" />
+    <gradient
+        android:centerColor="@color/midColor"
+        android:endColor="@color/themeColor"
+        android:startColor="@color/startColor"
+        android:type="linear" />
 </shape>

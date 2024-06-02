@@ -7,4 +7,6 @@
     <color name="white20">#33FFFFFF</color>
     <color name="red">#FF0000</color>
     <color name="red20">#80FF0000</color>
+    <color name="startColor">#4291ab</color>
+    <color name="midColor">#a5d075</color>
 </resources>

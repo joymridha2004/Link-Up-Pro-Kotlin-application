@@ -22,6 +22,8 @@
             android:id="@+id/nameTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableStart="@drawable/person_svg_icon"
+            android:drawablePadding="5dp"
             android:fontFamily="@font/roboto_medium"
             android:text="@string/name"
             android:textSize="16sp" />
@@ -40,6 +42,8 @@
             android:id="@+id/phoneNumberTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableStart="@drawable/contact_svg_icon"
+            android:drawablePadding="5dp"
             android:fontFamily="@font/roboto_medium"
             android:text="@string/phone_number"
             android:textSize="16sp" />
@@ -59,6 +63,8 @@
             android:id="@+id/emailTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableStart="@drawable/email_svg_icon"
+            android:drawablePadding="5dp"
             android:fontFamily="@font/roboto_medium"
             android:text="@string/email"
             android:textSize="16sp" />
@@ -77,6 +83,8 @@
             android:id="@+id/dobTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableStart="@drawable/birth_date_svg_icon"
+            android:drawablePadding="5dp"
             android:fontFamily="@font/roboto_medium"
             android:text="@string/date_of_birth"
             android:textSize="16sp" />
