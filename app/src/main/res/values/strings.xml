@@ -77,4 +77,5 @@ If you have any questions or suggestions about the Terms and Conditions, please 
 """</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="choose_a_new_password"><b>Choose a new password</b>.(Password must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character)</string>
 </resources>

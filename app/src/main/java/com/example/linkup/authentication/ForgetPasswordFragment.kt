@@ -22,6 +22,7 @@ import com.example.linkup.utils.SendEmail
 import com.example.linkup.utils.observeNetworkStatus
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.regex.Pattern
 
 class ForgetPasswordFragment : Fragment() {
     //Binding to xml layout
@@ -47,6 +48,18 @@ class ForgetPasswordFragment : Fragment() {
     private lateinit var showToast: ShowToast
     private var firstTimeCheck: Boolean = false
     private var internetStatus: Boolean? = null
+
+    // Password validation pattern
+    private val passwordPattern = Pattern.compile(
+        "^" +
+                "(?=.*[0-9])" +      // at least one digit
+                "(?=.*[a-z])" +      // at least one lowercase letter
+                "(?=.*[A-Z])" +      // at least one uppercase letter
+                "(?=.*[@#\$%^&+=])" + // at least one special character
+                "(?=\\S+$)" +        // no whitespace
+                ".{8,}" +            // at least 8 characters
+                "$"                  // end of string
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,6 +103,7 @@ class ForgetPasswordFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 newPassword = binding.ForgetPasswordFragmentNewPasswordTIET.text.toString()
+                validatePasswords()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -108,6 +122,7 @@ class ForgetPasswordFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 newConfirmPassword =
                     binding.ForgetPasswordFragmentNewConfirmPasswordTIET.text.toString()
+                validatePasswords()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -116,24 +131,17 @@ class ForgetPasswordFragment : Fragment() {
 
         })
 
-        //Handle action to verify Button
+        // Handle action to verify Button
         binding.ForgetPasswordFragmentNextBT.setOnClickListener {
             vibrator.vibrate(100)
-            if (!internetStatus!!) {
+            if (internetStatus != true) {
                 showToast.motionWarningToast("Warning", "You are currently offline")
             } else {
-                if (newPassword == newConfirmPassword) {
-                    if (newPassword!!.length > 6) {
-                        workInProgressStart()
-                        updatePassword()
-                    } else {
-                        showToast.warningToast("Minimum password contain 6 character")
-                    }
-                } else {
-                    showToast.warningToast("Password mismatch")
+                if (validatePasswords()) {
+                    workInProgressStart()
+                    updatePassword()
                 }
             }
-
         }
         return binding.root
     }
@@ -152,6 +160,20 @@ class ForgetPasswordFragment : Fragment() {
         binding.ForgetPasswordFragmentNextBT.isEnabled = true
         binding.ForgetPasswordFragmentNextBT.visibility = View.VISIBLE
         binding.step2VerificationFragmentPB.visibility = View.GONE
+    }
+
+    private fun validatePasswords(): Boolean {
+        if (!passwordPattern.matcher(newPassword).matches()) {
+            showToast.warningToast("Password format mismatch!")
+            return false
+        }
+
+        if (newPassword != newConfirmPassword) {
+            showToast.warningToast("Passwords do not match")
+            return false
+        }
+
+        return true
     }
 
     private fun updatePassword() {
